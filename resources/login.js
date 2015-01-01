@@ -28,7 +28,8 @@ var Login = {
       e.preventDefault();
       
       var data = {
-        email: me.getEmail()
+        email: me.getEmail(),
+        challenge: "true"
       };
 
       $('#login-output').append('<b>-> Client, I</b><br/>' + data.email + '<br/>');
@@ -45,7 +46,7 @@ var Login = {
     var me = this;
 
     $('#login-output').append('<b><- Server, Salt</b><br/>' + response.salt + '<br/>');
-    $('#login-output').append('<b><- Server, B</b><br/>' + response.B + '<br/>');
+    $('#login-output').append('<b><- Server, B</b><br/>' + response.b + '<br/>');
 
     var client = me.getClient();
     
@@ -58,7 +59,7 @@ var Login = {
     	window.location = window.location;
     }
     
-    var credentials = client.step2(response.salt, response.B);
+    var credentials = client.step2(response.salt, response.b);
 
     var end = Date.now();
 
@@ -71,6 +72,7 @@ var Login = {
       M1: credentials.M1
     };
 
+    $('#login-output').append('<b>-> Client, A</b><br/>' + data.A + '<br/>');
     $('#login-output').append('<b>-> Client, M</b><br/>' + data.M1 + ' crypto took ' + (end-start) + 'ms <br/>');
 
     $.post(me.options.url, data, function () {

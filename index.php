@@ -117,7 +117,7 @@
       passwordId: '#password-login',
       passwordSaltId: '#password-login-salt',
       passwordVerifierId: '#password-login-verifier',
-      url: './srp-6a-demo/login'
+      url: './login.php'
     });
 
     var registerForm = $('#register-form');
@@ -133,11 +133,11 @@
         values[field.name] = field.value;
       });
 
-      $.post('./srp-6a-demo/register', values, function (response) {
+      $.post('./register.php', values, function (response) {
         if (response.error) {
           $('#register-output').html(response.error);
         } else {
-          var userId = response['email'];
+          var userId = response['user-id'];
           $('#register-output').html("User registered with id: " + userId);
         }
       }, 'json');

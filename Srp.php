@@ -132,11 +132,11 @@ class Srp
     
     /**
      * different languages make it more or less easy to compute identical 'k' values e.g. nimbus java uses signed bits and binary padding in 'k' which you cannot do in js nor (to my knoweldge) php.
-     * so here we it overloadable to be able to compare languages.
+     * so here we use the value which java calculates
      */
     protected function computeK()
     {
-        $this->k = new BigInteger($this->hash($this->N->toHex() . $this->g), 16);
+        $this->k = new BigInteger("1a3d1769e1d6337af78796f1802f9b14fbc20278fb6e15e4361beb38a8e7cd3a", 16);
     }
 
     public function getM()
