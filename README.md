@@ -12,9 +12,9 @@ The file `srp-config.php` contains the SRP constants:
 
 ```
 $SRP6CryptoParams = [
-    "N_base10" => "19502997308...
+    "N_base10" => "19502997308..."
     "g_base10" => "2",
-    "k_base16" => "1a3d1769e1d...
+    "k_base16" => "1a3d1769e1d..."
     "H" => "sha256"
 ];
 ```
