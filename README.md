@@ -2,7 +2,7 @@
 
 Copyright (c) Simon Massey, 2015
 
-Demo of Secure Remote Password (SRP-6a) protocol implementation of a browser authenticating to a PHP server using [Thinbus SRP6a Javascript](https://bitbucket.org/simon_massey/thinbus-srp-js). 
+Demo of Secure Remote Password (SRP-6a) protocol implementation of a browser authenticating to a PHP server using the [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js) Javascript library. 
 
 This work is based on [Ruslan Zazvacky's SRP PHP demo](https://github.com/RuslanZavacky/srp-6a-demo). 
 
@@ -33,7 +33,7 @@ cd thinbus-php
 ## License
 
 ```
-   Copyright 2014 Simon Massey
+   Copyright 2015 Simon Massey
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
