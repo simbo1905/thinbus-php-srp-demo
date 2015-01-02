@@ -4,6 +4,8 @@
  */
 require 'lib/require.php';
 
+require_once 'srp-config.php';
+
 $result = array();
 
 if (! empty($_POST['challenge'])) {
@@ -16,11 +18,7 @@ if (! empty($_POST['challenge'])) {
             'error' => 'No user with such email'
         );
     } else {
-        
-        $N_base10str = "19502997308733555461855666625958719160994364695757801883048536560804281608617712589335141535572898798222757219122180598766018632900275026915053180353164617230434226106273953899391119864257302295174320915476500215995601482640160424279800690785793808960633891416021244925484141974964367107";
-        $g_base10str = "2";
-        
-        $srp = new Srp($N_base10str, $g_base10str);
+        $srp = new Srp($SRP6CryptoParams["N_base10"], $SRP6CryptoParams["g_base10"], $SRP6CryptoParams["k_base16"], $SRP6CryptoParams["H"]);
         
         $B = $srp->step1($_POST['email'], $user->password_salt, $user->password_verifier);
         

@@ -1,6 +1,7 @@
 <?php
 /*
  * Copyright 2014 Ruslan Zavacky <ruslan.zavackiy@gmail.com>
+ * Copyright 2015 Simon Massey
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -61,11 +62,41 @@ class Srp
     protected $M;
 
     protected $HAMK;
+    
+    /**
+     * name of the hashing algorith e.g. "sha256"
+     * @var string
+     */
+    protected $H;
 
     public function stripLeadingZeros($str) {
         return ltrim($str, '0');
     }
     
+    /**
+     * @param string $N_base10str
+     *            The N crypto parameter as string in base 10. Must match the parameter the client is using.
+     * @param string $g_base10str
+     *            The g crypto parameter as string in base 10. Must match the parameter the client is using.
+     * @param string $k_base16str
+     *            The k value as string in base 16. Must match the parameter that the client is using (signed bits and binary padding means Java libs create a specific value).
+     * @param string $Hstr
+     *            The name of the hashing algorith to use e.g. 'sha256'
+     */
+    public function __construct($N_base10str, $g_base10str, $k_base16str, $Hstr)
+    {
+        $this->N = new BigInteger($N_base10str, 10);
+        $this->g = new BigInteger($g_base10str, 10);
+        $this->k = new BigInteger($k_base16str, 16);
+        $this->H = $Hstr;
+    }
+    /**
+     *
+     * @param unknown $userID The user id 'I'
+     * @param unknown $salt_base16str The user salt 's'
+     * @param unknown $v_base16str The user verifier 'v'
+     * @return string The server challenge 'B'
+     */
     public function step1($userID, $salt_base16str, $v_base16str)
     {
         $this->salt = $salt_base16str;
@@ -85,6 +116,13 @@ class Srp
         return $this->Bhex;
     }
 
+    /**
+     *
+     * @param string $Ahex The client ephemerial key 'A'
+     * @param string $M1hex The client password proof 'M1'
+     * @throws \Exception If the password proof fails
+     * @return string The server proof of the shared key 'S' and verifier 'M2'
+     */
     public function step2($Ahex, $M1hex)
     {
         $this->Ahex = $this->stripLeadingZeros($Ahex);
@@ -110,55 +148,26 @@ class Srp
         
         return $this->HAMK;
     }
-
+  
     /**
-     *
-     * @param unknown $N_base10str
-     *            The N crypto parameter as string in base 10. Must match the parameter the client is using.
-     * @param unknown $g_base10str
-     *            The g crypto parameter as string in base 10. Must match the parameter the client is using.
-     * @param unknown $v_base16str
-     *            The verifier as string in base 16. This is taken from the database and is not shared with the client. The client uses the password in the their math rather than the verifier.
-     * @param unknown $salt
-     *            The random salt for the user. This is taken from the database and is shared wit the client. This should be unique between users so it is recommend that the database has a unique index on this column.
+     * @return string 'M1' the servers calculation of what the password proof should be
      */
-    public function __construct($N_base10str, $g_base10str)
-    {
-        $this->N = new BigInteger($N_base10str, 10);
-        $this->g = new BigInteger($g_base10str, 10);
-        $this->computeK();
-    }
-    
-    
-    /**
-     * different languages make it more or less easy to compute identical 'k' values e.g. nimbus java uses signed bits and binary padding in 'k' which you cannot do in js nor (to my knoweldge) php.
-     * so here we use the value which java calculates
-     */
-    protected function computeK()
-    {
-        $this->k = new BigInteger("1a3d1769e1d6337af78796f1802f9b14fbc20278fb6e15e4361beb38a8e7cd3a", 16);
-    }
-
     public function getM()
     {
         return $this->M;
     }
 
+    /**
+     * @return string 'M2' the server proof of the shard key 'S' and that it has the verifier 'v'.
+     */
     public function getHAMK()
     {
         return $this->HAMK;
     }
 
-    /**
-     * Hash function to be used in SRP
-     *
-     * @param
-     *            $x
-     * @return string
-     */
     public function hash($x)
     {
-        return strtolower(hash('sha256', $x));
+        return strtolower(hash($this->H, $x));
     }
 
     function createRandomBigIntegerInRange() {
@@ -294,12 +303,18 @@ class Srp
         
         return $result;
     }
-
+    
+    /**
+     * @return BigInteger The client verifier 'v'.
+     */
     public function getVerifier()
     {
         return $this->v;
     }
 
+    /**
+     * @return BigInteger The client salt 's'.
+     */
     public function getSalt()
     {
         return $this->salt;

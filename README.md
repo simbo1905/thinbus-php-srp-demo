@@ -4,7 +4,31 @@ Copyright (c) Simon Massey, 2015
 
 Demo of Secure Remote Password (SRP-6a) protocol implementation of a browser authenticating to a PHP server using [Thinbus SRP6a Javascript](https://bitbucket.org/simon_massey/thinbus-srp-js). 
 
-This work is based on [Ruslan Zazvacky's SRP PHP demo](https://github.com/RuslanZavacky/srp-6a-demo)
+This work is based on [Ruslan Zazvacky's SRP PHP demo](https://github.com/RuslanZavacky/srp-6a-demo). 
+
+## Configuration
+
+The file `srp-config.php` contains the SRP constants: 
+
+```
+$SRP6CryptoParams = [
+    "N_base10" => "19502997308...
+    "g_base10" => "2",
+    "k_base16" => "1a3d1769e1d...
+    "H" => "sha256"
+];
+```
+
+The values used must match the values configured in the javascript.  
+
+See the thinbus documentation including the java tool to create your own large safe prime values using openssl. 
+
+## Code
+
+```
+git clone https://simon_massey@bitbucket.org/simon_massey/thinbus-php.git
+cd thinbus-php
+```
 
 ## License
 
