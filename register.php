@@ -3,7 +3,7 @@
  * @author      ruslan.zavackiy
  */
 
-require 'lib/require.php';
+require 'require.php';
 
 if (!empty($_POST['registerBtn'])) {
   $user = R::findOne('user', 'email = :email', array(

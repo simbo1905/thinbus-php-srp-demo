@@ -1,14 +1,14 @@
 <?php
 require_once 'PHPUnit/Framework/TestCase.php';
 
-require_once 'Srp.php';
+require_once 'thinbus/thinbus-srp.php';
 
-require_once 'BigInteger.php';
+require_once 'thinbus/BigInteger.php';
 
 /**
  * This subclass lets use override the random 'b' value and constant 'k' value with those seen in a debugger running the js+java thinbus tests.
  */
-class NotRandomSrp extends Srp
+class NotRandomSrp extends ThinbusSrp
 {
 
     protected $notRandomNumber;

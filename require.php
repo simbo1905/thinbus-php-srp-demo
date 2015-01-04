@@ -12,8 +12,8 @@ $root = dirname(dirname(__FILE__));
 
 session_start();
 
-require $root . '/lib/rb.php';
-require $root . '/BigInteger.php';
-require $root . '/Srp.php';
+require 'RedBean.php';
+require 'thinbus/thinbus-srp-config.php';
+require 'thinbus/thinbus-srp.php';
 
-R::setup('sqlite:srp_db.txt');
+R::setup('sqlite:/tmp/srp_db.txt');
