@@ -2,29 +2,16 @@
 
 Copyright (c) Simon Massey, 2015
 
-Demo of Secure Remote Password (SRP-6a) protocol implementation of a browser authenticating to a PHP server using the [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js) Javascript library. 
-
-This work is based on [Ruslan Zazvacky's SRP PHP demo](https://github.com/RuslanZavacky/srp-6a-demo). 
-
-## Code
-
-```
-git clone https://simon_massey@bitbucket.org/simon_massey/thinbus-php.git
-cd thinbus-php
-```
-
-# Usage Guide
+Demo of Secure Remote Password (SRP-6a) protocol implementation of a browser authenticating to a PHP server using the [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js) Javascript library. This work is based on [Ruslan Zazvacky's SRP PHP demo](https://github.com/RuslanZavacky/srp-6a-demo). 
 
 The core PHP library files are in the `/thinbus` folder:
 
-```
-thinbus/BigInteger.php
-thinbus/srand.php
-thinbus/thinbus-srp-config.php
-thinbus/thinbus-srp.php
-```
+* `thinbus/thinbus-srp-config.php` SRP configuration global variables. Must be included before the thinbus library code.  
+* `thinbus/BigInteger.php` pear.php.net [BigInteger math package](http://pear.php.net/package/BigInteger)
+* `thinbus/srand.php` strong random numbers from [George Argyros](https://github.com/GeorgeArgyros/Secure-random-bytes-in-PHP) avoiding known buggy versions of random libraries. 
+* `thinbus/thinbus-srp.php` PHP port of the Thinbus SRP6JavaClientSession based on code by [Ruslan Zavacky](https://github.com/RuslanZavacky/srp-6a-demo)
 
-The file `thinbus-srp-config.php` contains the SRP constants: 
+The file `thinbus-srp-config.php` contains the SRP constants which looks something like: 
 
 ```
 $SRP6CryptoParams = [
@@ -35,20 +22,16 @@ $SRP6CryptoParams = [
 ];
 ```
 
-The values used must match the values configured in the JavaScript; see the [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js) including the java commandline tool to create your own large safe prime values using openssl. 
-
-The `BigIntger.php` script is the [pear.php.net BigInteger](http://pear.php.net/package/BigInteger) math package. The library `srand.php` is by [George Argyros](https://github.com/GeorgeArgyros/Secure-random-bytes-in-PHP) which supplies strong random numbers avoiding known buggy versions of random libraries. 
-
-The script `thinbus-srp.php` is a port of the Thinbus SRP6JavaClientSession class based on the SRP PHP code by [Ruslan Zavacky](https://github.com/RuslanZavacky/srp-6a-demo). 
+The numeric constants must match the values configured in the JavaScript; see the [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js). Consider create your own large safe prime values using openssl using the Thinbus instructions. 
 
 The demo application comprises of the following top level php files. It saves user SRP data in a [SQLite](http://php.net/manual/en/book.sqlite.php) flat file database at `/tmp/srp_db.txt` which can be changed in the file `require.php`. 
 
-```
-require.php // includes the SRP config, Thinbus, RedBean library, and initialises the SQLite database. 
-RedBean.php // http://redbeanphp.com "RedBeanPHP is an easy-to-use, on-the-fly ORM for PHP. It's 'zero config', relying on strict conventions instead." 
-register.php // saves the user email, salt and verifier into the flat file database. 
-login.php // performs the SRP6a protocol. first it AJAX posts the email and gets back the salt 's' and a server challenge 'B'. second it posts 'A'+'M' as the password proof.  
-```
+* `require.php` a fragment to pull in the SRP constants, Thinbus library, RedBean library. It initialises the SQLite database. 
+* `RedBean.php` [RedBeanPHP](http://redbeanphp.com) "an easy-to-use, on-the-fly ORM for PHP. It's 'zero config', relying on strict conventions instead."
+* `register.php` saves the user email, salt and verifier into the flat file database using RedBean  
+* `login.php` loads the user salt and verifier using RedBean to perform the SRP6a protocol  
+
+To login the browser first uses the email to fetch the salt `s` and the server challenge `B` using ajax. It then generates a random `A` and computes the password proof `B` which are posted together with the email as the users credentials. 
 
 ## License
 
