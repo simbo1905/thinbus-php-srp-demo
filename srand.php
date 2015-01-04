@@ -1,5 +1,7 @@
 <?php
 /*
+ * https://github.com/GeorgeArgyros/Secure-random-bytes-in-PHP
+ *
  * Author:
  * George Argyros <argyros.george@gmail.com>
  *
