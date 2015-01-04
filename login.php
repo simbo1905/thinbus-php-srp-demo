@@ -48,8 +48,7 @@ if (! empty($_POST['challenge'])) {
         $result = array(
             'error' => 'Authentication failed',
             'debug' => array(
-                'post' => $_POST,
-                'session' => $_SESSION
+                'post' => $_POST
             )
         );
     }
