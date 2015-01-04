@@ -22,16 +22,25 @@ $SRP6CryptoParams = [
 ];
 ```
 
-The numeric constants must match the values configured in the JavaScript; see the [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js). Consider create your own large safe prime values using openssl using the Thinbus instructions. 
+The numeric constants must match the values configured in the JavaScript; see the [Thinbus documentation](https://bitbucket.org/simon_massey/thinbus-srp-js). Consider create your own large safe prime values using openssl using the Thinbus instructions. 
 
-The demo application comprises of the following top level php files. It saves user SRP data in a [SQLite](http://php.net/manual/en/book.sqlite.php) flat file database at `/tmp/srp_db.txt` which can be changed in the file `require.php`. 
+The demo application comprises of the following top level php files. It saves user SRP data in a [SQLite](http://php.net/manual/en/book.sqlite.php) flat file database at `/tmp/srp_db.txt` which can be changed in the file `require.php`: 
 
 * `require.php` a fragment to pull in the SRP constants, Thinbus library, RedBean library. It initialises the SQLite database. 
 * `RedBean.php` [RedBeanPHP](http://redbeanphp.com) "an easy-to-use, on-the-fly ORM for PHP. It's 'zero config', relying on strict conventions instead."
 * `register.php` saves the user email, salt and verifier into the flat file database using RedBean  
 * `login.php` loads the user salt and verifier using RedBean to perform the SRP6a protocol  
 
-To login the browser first uses the email to fetch the salt `s` and the server challenge `B` using ajax. It then generates a random `A` and computes the password proof `B` which are posted together with the email as the users credentials. 
+To login the browser first uses the email to fetch the salt `s` and the server challenge `B` using ajax. It then generates a random `A` and computes the password proof `M1` which are posted together with the email as the users credentials. If the user password proof works the `login.php` code sets a session variable `SRP_SESSION_KEY` which can be used to protect sensitive pages with something like: 
+
+```
+if( empty($_SESSION['SRP_SESSION_KEY'] ) ) {
+    // user is not authenticated
+    exit();
+}
+```
+
+The html page shows the corresponding session key generated from javascript which would be used for further cryptography (e.g. using WebCryptAPI). 
 
 ## License
 

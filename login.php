@@ -38,7 +38,9 @@ if (! empty($_POST['challenge'])) {
     
     try {
         $M2 = $srp->step2($A, $M1);
-        $temp = $srp->getSessionKey();
+        $key = $srp->getSessionKey();
+        $_SESSION['SRP_SESSION_KEY'] = $key;
+        unset($_SESSION['SRP']);
         $result = array(
             'M2' => $M2
         );
