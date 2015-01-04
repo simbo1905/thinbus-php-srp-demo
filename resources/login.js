@@ -87,9 +87,11 @@ var Login = {
       $('#login-output').append('<b><- Server</b><br/>' + response.error + '<br/>');
     } else {
       $('#login-output').append('<b><- Server, M2</b><br/>' + response.M2 + '<br/>');
+      
       if (me.getClient().step3(response.M2)) {
         $(document).trigger('success');
-        $('#login-output').append('<b>Success!</b>');
+        var K = me.getClient().getSessionKey();
+        $('#login-output').append('<b>Successful authenticated! Shared Strong Session key, K=H(S)</b><br/>' + K + '<br/>');
       } else {
         $('#login-output').append('<b>Failure!</b>');
       }

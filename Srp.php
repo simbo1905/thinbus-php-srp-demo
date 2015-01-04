@@ -34,37 +34,72 @@ class Srp
     protected $salt;
 
     /**
-     * @var \BigInteger|string
+     * @var \BigInteger N
      */
     protected $N;
 
+    /**
+     * @var \BigInteger g
+     */
     protected $g;
 
+    /**
+     * We require the 'k' to be configured as binary->BigInteger is not platform portable.
+     * @var \BigInteger k
+     */
     protected $k;
 
+    /**
+     * @var \BigInteger The password verifier 'v'.
+     */
     protected $v;
 
+    /**
+     * @var string The user identity 'I'.
+     */
     protected $userID;
 
+    /**
+     * @var \BigInteger The client one time ephemeral key.
+     */
     protected $A;
 
+    /**
+     * @var string A string version of the $A // TODO this is redundant?
+     */
     protected $Ahex;
 
     /**
-     * @var \BigInteger|null Secure Random Number
+     * @var string A hex encoded secure randome number.
      */
     protected $b = null;
 
     /**
-     * @var \BigInteger|null
+     * @var \BigInteger|null The server one time ephemeral key derived from 'b'
      */
     protected $B = null;
 
+    /**
+     * @var srring A string version of B // TODO is this redundant?
+     */
     protected $Bhex;
 
+    /**
+     * The proof-of-password hash M.
+     * @var unknown
+     */
     protected $M;
 
-    protected $HAMK;
+    /**
+     * The server proof of a shared key (and verifier) M2.
+     * @var unknown
+     */
+    protected $M2;
+    
+    /**
+     * A shared strong session key K=H(S)
+     */
+    protected $K;
     
     /**
      * name of the hashing algorith e.g. "sha256"
@@ -139,17 +174,19 @@ class Srp
         $avu = $this->A->multiply($this->v->powMod($u, $this->N));
         
         $this->S = $avu->modPow($this->b, $this->N);
-        
         $Shex = $this->stripLeadingZeros($this->S->toHex());
+        
+        $this->K = $this->hash($Shex);
+        
         $this->M = $this->hash($this->Ahex . $this->Bhex . $Shex);
         
         if( $M1hex != $this->M) {
             throw new \Exception('Client M1 does not match Server M1.');
         }
         
-        $this->HAMK = $this->hash($this->Ahex . $this->M . $Shex);
+        $this->M2 = $this->hash($this->Ahex . $this->M . $Shex);
         
-        return $this->HAMK;
+        return $this->M2;
     }
   
     /**
@@ -163,9 +200,17 @@ class Srp
     /**
      * @return string 'M2' the server proof of the shard key 'S' and that it has the verifier 'v'.
      */
-    public function getHAMK()
+    public function getM2()
     {
-        return $this->HAMK;
+        return $this->M2;
+    }
+    
+    /**
+     * @return string 'K=H(S)' a strong shared session key.
+     */
+    public function getSessionKey()
+    {
+        return $this->K;
     }
 
     public function hash($x)
