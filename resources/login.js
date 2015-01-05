@@ -91,7 +91,7 @@ var Login = {
       if (me.getClient().step3(response.M2)) {
         $(document).trigger('success');
         var K = me.getClient().getSessionKey();
-        $('#login-output').append('<b>Successful authenticated! Shared Strong Session key, K=H(S)</b><br/>' + K + '<br/>');
+        $('#login-output').append('<b>Successfully authenticated! Shared Strong Session key K=H(S):</b><br/>' + K + '<br/>');
       } else {
         $('#login-output').append('<b>Failure!</b>');
       }

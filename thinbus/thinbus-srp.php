@@ -277,4 +277,12 @@ class ThinbusSrp
     {
         return $this->salt;
     }
+    
+    /**
+     * @return string The user id 'I'.
+     */
+    public function getUserID()
+    {
+        return $this->userID;
+    }
 }

@@ -12,7 +12,7 @@ $root = dirname(dirname(__FILE__));
 
 session_start();
 
-require 'RedBean.php';
+require 'rb.php';
 require 'thinbus/thinbus-srp-config.php';
 require 'thinbus/thinbus-srp.php';
 

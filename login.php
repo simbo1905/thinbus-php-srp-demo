@@ -40,10 +40,12 @@ if (! empty($_POST['challenge'])) {
         $M2 = $srp->step2($A, $M1);
         $key = $srp->getSessionKey();
         $_SESSION['SRP_SESSION_KEY'] = $key;
-        unset($_SESSION['SRP']);
+        $userId = $srp->getUserID();
+        $_SESSION['SRP_USER_ID'] = $userId;
         $result = array(
             'M2' => $M2
         );
+        unset($_SESSION['SRP']);
     } catch (Exception $e) {
         $result = array(
             'error' => 'Authentication failed',
@@ -58,3 +60,5 @@ if (! empty($_POST['challenge'])) {
 echo json_encode($result);
 
 exit();
+
+
