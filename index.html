@@ -5,7 +5,7 @@
   <title>SRP-6a  &middot; Registration</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="SRP-6a Java Implementation"/>
-  <link href="./resources/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+  <link href="resources/bootstrap/css/bootstrap.css" rel="stylesheet"/>
   <style type="text/css">
     body {
       padding-top: 40px;
@@ -39,7 +39,7 @@
     }
 
   </style>
-  <link href="./resources/bootstrap/css/bootstrap-responsive.css" rel="stylesheet"/>
+  <link href="resources/bootstrap/css/bootstrap-responsive.css" rel="stylesheet"/>
   <!--[if lt IE 9]>
   <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
@@ -55,6 +55,7 @@
         <input id="password-salt" type="hidden" name="password_salt"/>
         <input id="password-verifier" type="hidden" name="password_verifier"/>
         <button id="registerBtn" name="registerBtn" class="btn btn-large btn-primary" type="submit">Register</button>
+        Strength: <span id="strength_score">0</span> <span id="strength_human">None</span>
       </form>
       <div class="alert alert-success">
         <div>
@@ -84,20 +85,21 @@
   </div>
 </div>
 <!-- layout and ajax includes -->
-<script src="./resources/jquery.js"></script>
-<script src="./resources/bootstrap/js/bootstrap.min.js"></script>
+<script src="resources/jquery.js"></script>
+<script src="resources/bootstrap/js/bootstrap.min.js"></script>
 
 <!-- Thinbus SRP -->
 
 <!-- Include minimised Thinbus SRP JS crypo library and chosen hashing algorithm -->
-<script src="./resources/lib/sha256-min.js"></script>
-<script src="./resources/lib/thinbus-srp6a-min.js"></script>
+<script src="resources/lib/sha256-min.js"></script>
+<script src="resources/lib/thinbus-srp6a-min.js"></script>
 <!-- You must include one crypto configuration and it must match what the server is configured to use -->
-<script src="./resources/lib/thinbus-srp6a-config-sha256n1024.js"></script>
+<script src="resources/lib/thinbus-srp6a-config-sha256n1024.js"></script>
 
 <!-- The logic which drives the register and login logic --> 
-<script src="./resources/register.js"></script>
-<script src="./resources/login.js"></script>
+<script src="resources/register.js"></script>
+<script src="resources/login.js"></script>
+<script src="resources/simple-password-meter.js"></script>
 
 <script type="text/javascript">
   $(function () {
@@ -133,7 +135,7 @@
         values[field.name] = field.value;
       });
 
-      $.post('./register.php', values, function (response) {
+      $.post('register.php', values, function (response) {
         if (response.error) {
           $('#register-output').html(response.error);
         } else {
