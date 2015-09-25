@@ -50,8 +50,8 @@
     <div class="offset3 span6">
       <form id="register-form" class="form-signin" method="post">
         <h2 class="form-signin-heading">Registration Form</h2>
-        <input name="email" value="ruslan.zavackiy@gmail.com" type="text" class="input-block-level" placeholder="Email address"/>
-        <input id="password" value="random-password" name="password" type="password" class="input-block-level" placeholder="Password"/>
+        <input id="email-register" name="email" type="text" class="input-block-level" placeholder="Email address"/>
+        <input id="password" name="password" type="password" class="input-block-level" placeholder="Password"/>
         <input id="password-salt" type="hidden" name="password_salt"/>
         <input id="password-verifier" type="hidden" name="password_verifier"/>
         <button id="registerBtn" name="registerBtn" class="btn btn-large btn-primary" type="submit">Register</button>
@@ -74,8 +74,8 @@
     <div class="offset3 span6">
       <form id="login-form" action="login.php" class="form-signin" method="post">
         <h2 class="form-signin-heading">Login Form</h2>
-        <input id="email-login" value="ruslan.zavackiy@gmail.com" name="email" type="text" class="input-block-level" placeholder="Email address"/>
-        <input id="password-login" value="random-password" name="password" type="password" class="input-block-level" placeholder="Password"/>
+        <input id="email-login" name="email" type="text" class="input-block-level" placeholder="Email address"/>
+        <input id="password-login" name="password" type="password" class="input-block-level" placeholder="Password"/>
         <button id="loginBtn" name="registerBtn" class="btn btn-large btn-primary" type="submit">Login</button>
       </form>
       <div class="alert alert-info">
@@ -94,12 +94,12 @@
 <!-- The logic which drives the register and login logic --> 
 <script src="resources/register.js"></script>
 <script src="resources/login.js"></script>
-<script src="resources/simple-password-meter.js"></script>
+<script src="resources/simple-password-meter.js"></script> 
 
 <script type="text/javascript">
   $(function () {
     Register.initialize({
-      emailId: '#email-login',
+      emailId: '#email-register',
       formId: '#register-form',
       registerBtnId: '#registerBtn',
       passwordId: '#password',

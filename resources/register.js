@@ -3,8 +3,9 @@ var Register = {
   password: null,
   srpClient: null,
 
+  // these options are the defaults which may be overridden by the html
   options: {
-    emailId: '#email-login',
+    emailId: '#email-register',
     formId: '#register-form',
     registerBtnId: '#registerBtn',
     passwordId: '#password',
@@ -21,9 +22,9 @@ var Register = {
 
     $(options.formId).on('submit', $.proxy(function () {
       me.onPasswordChange();
+      //alert(this.getPassword());
     }, me));
 
-	// TODO not sure why this onkeyup is not working yet
     $(options.emailId).on('keyup', $.proxy(function (event) {
       random16byteHex.advance(Math.floor(event.keyCode/4));
       me.onPasswordChange();
@@ -49,20 +50,22 @@ var Register = {
     var me = this;
 
     var verifier = this.generateVerifier();
-
-    $(me.options.passwordSaltId).attr('value', verifier.salt);
-    $(me.options.passwordVerifierId).attr('value', verifier.verifier);
-
-    $('#password-salt-output').text(verifier.salt);
-    $('#password-verifier-output').text(verifier.verifier);
+    
+    if( verifier !== null ) {
+    	$(me.options.passwordSaltId).attr('value', verifier.salt);
+    	$(me.options.passwordVerifierId).attr('value', verifier.verifier);
+    	
+    	$('#password-salt-output').text(verifier.salt);
+    	$('#password-verifier-output').text(verifier.verifier);
+    }
   },
 
   getEmail: function () {
-    return $(this.options.emailId).attr('value');
+    return $(this.options.emailId).val();
   },
 
   getPassword: function () {
-    return $(this.options.passwordId).attr('value');
+    return $(this.options.passwordId).val();
   },
 
   getClient: function () {

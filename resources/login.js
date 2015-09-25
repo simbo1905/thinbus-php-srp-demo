@@ -3,6 +3,7 @@ var Login = {
   password: null,
   email: null, 
 
+  // these options are the defaults which may be overridden by the html
   options: {
     emailId: '#email-login',
     formId: '#login-form',
@@ -52,6 +53,8 @@ var Login = {
     
     var start = Date.now();
     
+    //alert(me.password);
+    
     try {
     	client.step1(me.email, me.password);
     } catch(e) {
@@ -73,7 +76,7 @@ var Login = {
     };
 
     $('#login-output').append('<b>-> Client, A</b><br/>' + data.A + '<br/>');
-    $('#login-output').append('<b>-> Client, M</b><br/>' + data.M1 + ' crypto took ' + (end-start) + 'ms <br/>');
+    $('#login-output').append('<b>-> Client, M</b><br/>' + data.M1 + '<br/>crypto took ' + (end-start) + 'ms <br/>');
 
     $.post(me.options.url, data, function () {
       me.onRespondResponse.apply(me, arguments);
@@ -101,11 +104,11 @@ var Login = {
   },
 
   getEmail: function () {
-    return $(this.options.emailId).attr('value');
+    return $(this.options.emailId).val();
   },
 
   getPassword: function () {
-    return $(this.options.passwordId).attr('value');
+    return $(this.options.passwordId).val();
   },
 
   getClient: function () {
