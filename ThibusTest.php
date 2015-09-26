@@ -67,8 +67,7 @@ class ThibusTest extends PHPUnit_Framework_TestCase
     {
         // TODO Auto-generated constructor
     }
-    
-   
+
     /**
      * Tests authentication using values from thinbus js+java tests.
      */
@@ -92,6 +91,40 @@ class ThibusTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("4e9852f22ffe107c463b4037d3527992ee8d9b78318257ac3d2bbbb03c143946", $M2);
     }
     
+    public function testSha1Vectors()
+    {
+        $projectDir = getenv('ZEND_PHPUNIT_PROJECT_LOCATION');
+        
+        // parse your data file however you want
+        $data = array();
+        foreach (file($projectDir . '/test-vectors-sha1.txt') as $line) {
+            $data[] = trim($line);
+        }
 
+        $username = $data[0];
+        $password = $data[1];
+        $g_base10 = $data[2];
+        $N_base10 = $data[3];
+        $k_base16 = $data[4];
+        
+        for ($i = 1; $i < 100; $i ++) {
+            
+            $s = $data[7*$i+0+5];
+            $v = $data[7*$i+1+5];
+            $b = $data[7*$i+2+5];
+            $B = $data[7*$i+3+5];
+            $A = $data[7*$i+4+5];
+            $M = $data[7*$i+5+5];
+            $M2 = $data[7*$i+6+5];
+            
+            $this->Srp = new NotRandomSrp($N_base10, $g_base10, $k_base16, "sha1");
+            $this->Srp->setNotRandom($b);
+            $Bs = $this->Srp->step1($username, $s, $v);
+            $this->assertEquals($B, $Bs); // sanity check that the injected not random took hold
+            $M2s = $this->Srp->step2($A, $M);
+            $this->assertEquals($M2, $M2s);
+            
+        }
+    }
 }
 

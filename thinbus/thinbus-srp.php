@@ -179,7 +179,7 @@ class ThinbusSrp
         
         $this->K = $this->hash($Shex);
         
-        $this->M = $this->hash($this->Ahex . $this->Bhex . $Shex);
+        $this->M = $this->stripLeadingZeros($this->hash($this->Ahex . $this->Bhex . $Shex));
         
         if( $M1hex != $this->M) {
             throw new \Exception('Client M1 does not match Server M1.');
@@ -187,7 +187,7 @@ class ThinbusSrp
         
         $this->M2 = $this->hash($this->Ahex . $this->M . $Shex);
         
-        return $this->M2;
+        return $this->stripLeadingZeros($this->M2);
     }
   
     /**
