@@ -37,7 +37,7 @@ It then generates a random `A` and computes the password proof `M1` which are co
 If the user password proof is correct the `login.php` code sets two session variables:
 
 * `SRP_USER_ID` the authenticated user id
-* `SRP_SESSION_KEY` a strong shared session `K=H(s)` which could be used for further cryptography
+* `SRP_SESSION_KEY` a strong shared session key `K=H(s)` which could be used for further cryptography
 
 You can use the authenticated `SRP_USER_ID` variable to protect senstive pages with something like the following: 
 
