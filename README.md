@@ -51,7 +51,7 @@ if( empty($_SESSION['SRP_USER_ID'] ) ) {
 }
 ```
 
-Please read the recommendations in the main thinbus documentation and takes additional steps such as using HTTPS and encrypting the password verifier in the database which are not covered in this demo. 
+Please read the recommendations in the main thinbus documentation and take additional steps such as using HTTPS and encrypting the password verifier in the database which are not covered in this demo. 
 
 ## License
 
