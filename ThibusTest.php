@@ -25,7 +25,7 @@ class NotRandomSrp extends ThinbusSrp
 }
 
 /**
- * Thibus test case.
+ * Tests authentication using values from thinbus js+java tests.
  */
 class ThibusTest extends PHPUnit_Framework_TestCase
 {
@@ -68,9 +68,6 @@ class ThibusTest extends PHPUnit_Framework_TestCase
         // TODO Auto-generated constructor
     }
 
-    /**
-     * Tests authentication using values from thinbus js+java tests.
-     */
     public function testWithJavaValues() {
         $this->Srp->setNotRandom("823466d37e1945a2d4491690bdca79dadd2ee3196e4611342437b7a2452895b9564105872ff26f6e887578b0c55453539bd3d58d36ff15f47e06cf5de818cedf951f6a0912c6978c50af790b602b6218ebf6c7db2b4652e4fcbdab44b4a993ada2878d60d66529cc3e08df8d2332fc1eff483d14938e5a");
         $B = $this->Srp->step1("tom@arcot.com", "2c7c4e8172a2b11af2278a6743a021acb8c497611b576a42d1bd1a2271732a40", "3e319ec41fbfb0d51cd99f01b2427fbe7ea5b4a5a3ec7b570b49a9ca2bb30b09abc395c462f002a619e66c315d9dff399bf82d35369c7567d443823e57de443476fbc4200c736297ad30ef968b80901d646d360499d470ba52b08f9d97885fac1ad8b1031bc44608903b87a6d2c31593f0e1151eaa137d");
