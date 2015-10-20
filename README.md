@@ -2,7 +2,7 @@
 
 Copyright (c) Simon Massey, 2015
 
-Demo of Secure Remote Password (SRP-6a) protocol implementation of a browser authenticating to a PHP server using the [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js) Javascript library. 
+Demo of Secure Remote Password (SRP-6a) protocol implementation of a browser authenticating to a PHP server using the [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js) Javascript library. **Note** Please read the [Thinbus documentation page](https://bitbucket.org/simon_massey/thinbus-srp-js) before attempting to use this demo code. 
 
 This work is based on [Ruslan Zazvacky's SRP PHP demo](https://github.com/RuslanZavacky/srp-6a-demo) and registers users into a SQLite database. It is very artificial as both the registration and login forms are shown on a single page. In a real application the registration form would only ever be shown to the user once. Logging in using the demo page doesn't take you into a main application. It only uses AJAX to confirm that login is successful. With a real application the login page upon successful login should GET the main application landing page. That would unload the login page which would delete the Thinbus SRP session object as recommended on the [Thinbus page](https://bitbucket.org/simon_massey/thinbus-srp-js). 
 
