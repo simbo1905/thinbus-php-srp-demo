@@ -46,10 +46,7 @@ You can use the authenticated `SRP_USER_ID` variable to protect senstive pages w
 if( empty($_SESSION['SRP_USER_ID'] ) ) {
     // user is not authenticated
     exit();
-} else {
-    $msg = "Hello ".$_SESSION['SRP_USER_ID']."!";
-    echo $msg;
-}
+} 
 ```
 
 Please read the recommendations in the main thinbus documentation and take additional steps such as using HTTPS and encrypting the password verifier in the database which are not covered in this demo. 
