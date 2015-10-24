@@ -36,9 +36,12 @@ require_once 'BigInteger.php';
  * and the client sending the password proof based on that challenge. This can
  * be done by either serializing this object into the server http session or
  * by putting it into the database. To prevent against online dicionary attacks this
- * object refuses to either steps more than once. That forces an attacker to
+ * object refuses to perform any step more than once. That forces an attacker to
  * get a new challenge from the server for every password guess to slow them down
- * without causing any significant overhead to real users logging in.
+ * without causing any significant overhead to real users logging in. After
+ * authentation the object holds the user id and a shared strong session key. If
+ * you are not going to use the shared strong session key simply remove the object
+ * from the location you had stored it to free up space in the session or database.
  */
 class ThinbusSrp
 {
@@ -87,7 +90,7 @@ class ThinbusSrp
     protected $B = null;
 
     /**
-     * @var srring A string version of B // TODO is this redundant?
+     * @var srring A string version of B
      */
     protected $Bhex;
     
@@ -125,9 +128,12 @@ class ThinbusSrp
     }
     
     /**
-     *
+	 * Returns the one-time server challenge `B` encoded as hex.
+     * Records the identity 'I' and password 'P' of the authenticating
+	 * user. Increments state to 1 to combat a dictionary attack.
+	 *
      * @param unknown $userID The user id 'I'
-     * @param unknown $salt_base16str The user salt 's'. Actually unused although the http://srp.stanford.edu/design.html suggests using it in the M calculation as we use SHA256 we don't.
+     * @param unknown $salt_base16str The user salt 's'. Currently unused although the http://srp.stanford.edu/design.html suggests using it in the M calculation as we use SHA256 we don't.
      * @param unknown $v_base16str The user verifier 'v'
      * @return string The server challenge 'B'
      */
@@ -153,7 +159,9 @@ class ThinbusSrp
     }
 
     /**
-     *
+     * Validates a password proof `M1` based on the client one-time public key `A`.
+	 * Increments state to 2 to combat a dictionary attack.
+	 *
      * @param string $Ahex The client ephemerial key 'A'
      * @param string $M1hex The client password proof 'M1'
      * @throws \Exception If the password proof fails

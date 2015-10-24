@@ -1,9 +1,18 @@
 <?php
+
+/**
+ * NOTE THIS FILE DOES NOT RUN ON A SERVER
+ * It is used to test the code in an IDE before releasing.
+ */
+
+
 require_once 'PHPUnit/Framework/TestCase.php';
 
 require_once 'thinbus/thinbus-srp.php';
 
 require_once 'thinbus/BigInteger.php';
+
+
 
 /**
  * This subclass lets use override the random 'b' value and constant 'k' value with those seen in a debugger running the js+java thinbus tests.
