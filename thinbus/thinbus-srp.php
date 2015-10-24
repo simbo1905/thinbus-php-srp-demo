@@ -26,8 +26,26 @@ require_once 'BigInteger.php';
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+/**
+ * This is a temporary authentication session object. It issues a challenge B at
+ * step1 then validates a password proof based on that challenge in step2. The
+ * server needs to hold this object between the client being given the challenge
+ * and the client sending the password proof based on that challenge. This can
+ * be done by either serializing this object into the server http session or
+ * by putting it into the database. To prevent against online dicionary attacks this
+ * object refuses to either steps more than once. That forces an attacker to
+ * get a new challenge from the server for every password guess to slow them down
+ * without causing any significant overhead to real users logging in.
+ */
 class ThinbusSrp
 {
+    /**
+     * To protect against dictionary attacks we refuse to generate new challenges
+     * or validate additional guesses of the password. This variable tracks
+     * whether we have issued a challenge or checked a password proof and only
+     * allows either of those to happen once.
+     */
+    protected $step = 0;
 
     /**
      * @var \BigInteger Password salt
@@ -138,6 +156,7 @@ class ThinbusSrp
      */
     public function step1($userID, $salt_base16str, $v_base16str)
     {
+        if($this->step != 0 ) throw new \Exception("Possible dictionary attack refusing to collaborate");
         $this->salt = $salt_base16str;
         $this->v = new BigInteger($v_base16str, 16);
         $this->userID = $userID;
@@ -150,7 +169,9 @@ class ThinbusSrp
                  ->powMod(new BigInteger(1), $this->N);
         }
         
-        $this->Bhex =  $this->stripLeadingZeros($this->B->toHex());
+        $this->Bhex = $this->stripLeadingZeros($this->B->toHex());
+        
+        $this->step = 1;
         
         return $this->Bhex;
     }
@@ -164,6 +185,7 @@ class ThinbusSrp
      */
     public function step2($Ahex, $M1hex)
     {
+        if($this->step != 1 ) throw new \Exception("Possible dictionary attack refusing to collaborate.");
         $this->Ahex = $this->stripLeadingZeros($Ahex);
         $this->A = new BigInteger($Ahex, 16);
         
@@ -186,6 +208,8 @@ class ThinbusSrp
         }
         
         $this->M2 = $this->hash($this->Ahex . $this->M . $Shex);
+        
+        $this->step = 2;
         
         return $this->stripLeadingZeros($this->M2);
     }
