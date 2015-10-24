@@ -31,7 +31,7 @@ if (empty($_SESSION['SRP_USER_ID'])) {
 					<li class="active"><a href="./index.html">Home</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="./signout.php">Sign in</a></li>
+					<li><a href="./signout.php">Sign out</a></li>
 
 				</ul>
 			</div>
@@ -40,12 +40,6 @@ if (empty($_SESSION['SRP_USER_ID'])) {
 	</div>
 	<div class="container">
 
-	<?php
-	echo '<pre>';
-    print_r($_SESSION);
-    echo '</pre>';
-    ?>
-	
 		<div class="alert alert-dismissable alert-success">
 			<button type="button" class="close" data-dismiss="alert"
 				aria-hidden="true">×</button>
@@ -59,6 +53,12 @@ if (empty($_SESSION['SRP_USER_ID'])) {
     ?>
 			</span>
 		</div>
+		
+	<?php
+	echo '<pre>';
+    print_r($_SESSION);
+    echo '</pre>';
+    ?>
 
 	</div>
 </body>
