@@ -27,7 +27,10 @@ require_once 'BigInteger.php';
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /**
- * This is a temporary authentication session object. It issues a challenge B at
+ * See http://simon_massey.bitbucket.org/thinbus/login.png
+ * Please read the readme at https://bitbucket.org/simon_massey/thinbus-srp-js
+ *
+ * This is the server authentication session object. It issues a challenge B at
  * step1 then validates a password proof based on that challenge in step2. The
  * server needs to hold this object between the client being given the challenge
  * and the client sending the password proof based on that challenge. This can
@@ -46,11 +49,6 @@ class ThinbusSrp
      * allows either of those to happen once.
      */
     protected $step = 0;
-
-    /**
-     * @var \BigInteger Password salt
-     */
-    protected $salt;
 
     /**
      * @var \BigInteger N
@@ -79,16 +77,6 @@ class ThinbusSrp
     protected $userID;
 
     /**
-     * @var \BigInteger The client one time ephemeral key.
-     */
-    protected $A;
-
-    /**
-     * @var string A string version of the $A // TODO this is redundant?
-     */
-    protected $Ahex;
-
-    /**
      * @var string A hex encoded secure randome number.
      */
     protected $b = null;
@@ -102,18 +90,6 @@ class ThinbusSrp
      * @var srring A string version of B // TODO is this redundant?
      */
     protected $Bhex;
-
-    /**
-     * The proof-of-password hash M.
-     * @var unknown
-     */
-    protected $M;
-
-    /**
-     * The server proof of a shared key (and verifier) M2.
-     * @var unknown
-     */
-    protected $M2;
     
     /**
      * A shared strong session key K=H(S)
@@ -126,7 +102,7 @@ class ThinbusSrp
      */
     protected $H;
 
-    public function stripLeadingZeros($str) {
+    protected function stripLeadingZeros($str) {
         return ltrim($str, '0');
     }
     
@@ -147,17 +123,17 @@ class ThinbusSrp
         $this->k = new BigInteger($k_base16str, 16);
         $this->H = $Hstr;
     }
+    
     /**
      *
      * @param unknown $userID The user id 'I'
-     * @param unknown $salt_base16str The user salt 's'
+     * @param unknown $salt_base16str The user salt 's'. Actually unused although the http://srp.stanford.edu/design.html suggests using it in the M calculation as we use SHA256 we don't.
      * @param unknown $v_base16str The user verifier 'v'
      * @return string The server challenge 'B'
      */
     public function step1($userID, $salt_base16str, $v_base16str)
     {
         if($this->step != 0 ) throw new \Exception("Possible dictionary attack refusing to collaborate");
-        $this->salt = $salt_base16str;
         $this->v = new BigInteger($v_base16str, 16);
         $this->userID = $userID;
         
@@ -186,48 +162,48 @@ class ThinbusSrp
     public function step2($Ahex, $M1hex)
     {
         if($this->step != 1 ) throw new \Exception("Possible dictionary attack refusing to collaborate.");
-        $this->Ahex = $this->stripLeadingZeros($Ahex);
-        $this->A = new BigInteger($Ahex, 16);
+        $Ahex = $this->stripLeadingZeros($Ahex);
+        $A = new BigInteger($Ahex, 16);
         
-        if ($this->A->powMod(new BigInteger(1), $this->N) === 0) {
+        if ($A->powMod(new BigInteger(1), $this->N) === 0) {
             throw new \Exception('Client sent invalid key: A mod N == 0.');
         }
         
-        $u = new BigInteger($this->hash($this->Ahex . $this->Bhex), 16);
-        $avu = $this->A->multiply($this->v->powMod($u, $this->N));
+        $u = new BigInteger($this->hash($Ahex . $this->Bhex), 16);
+        $avu = $A->multiply($this->v->powMod($u, $this->N));
         
-        $this->S = $avu->modPow($this->b, $this->N);
-        $Shex = $this->stripLeadingZeros($this->S->toHex());
+        $S = $avu->modPow($this->b, $this->N);
+        $Shex = $this->stripLeadingZeros($S->toHex());
         
         $this->K = $this->hash($Shex);
         
-        $this->M = $this->stripLeadingZeros($this->hash($this->Ahex . $this->Bhex . $Shex));
+        $M = $this->stripLeadingZeros($this->hash($Ahex . $this->Bhex . $Shex));
         
-        if( $M1hex != $this->M) {
+        if( $M1hex != $M) {
             throw new \Exception('Client M1 does not match Server M1.');
         }
         
-        $this->M2 = $this->hash($this->Ahex . $this->M . $Shex);
+        $M2 = $this->hash($Ahex . $M . $Shex);
         
         $this->step = 2;
         
-        return $this->stripLeadingZeros($this->M2);
-    }
-  
-    /**
-     * @return string 'M1' the servers calculation of what the password proof should be
-     */
-    public function getM()
-    {
-        return $this->M;
+        $this->v = null;
+        $this->N = null;
+        $this->g = null;
+        $this->k = null;
+        $this->b = null;
+        $this->B = null;
+        $this->H = null;
+        
+        return $this->stripLeadingZeros($M2);
     }
 
     /**
-     * @return string 'M2' the server proof of the shard key 'S' and that it has the verifier 'v'.
+     * @return string The user id 'I'.
      */
-    public function getM2()
+    public function getUserID()
     {
-        return $this->M2;
+        return $this->userID;
     }
     
     /**
@@ -238,22 +214,22 @@ class ThinbusSrp
         return $this->K;
     }
 
-    public function hash($x)
+    protected function hash($x)
     {
         return strtolower(hash($this->H, $x));
     }
 
-    function createRandomBigIntegerInRange() {
+    protected function createRandomBigIntegerInRange() {
         return new BigInteger($this->getSecureRandom(), 16);
     }
     
-    public function getSecureRandom($bits = 64)
+    protected function getSecureRandom($bits = 64)
     {
         $str = secure_random_bytes($bits);
         return $this->binary2hex($str);
     }
 
-    public function binary2hex($string)
+    protected function binary2hex($string)
     {
         $chars = array(
             '0',
@@ -285,28 +261,5 @@ class ThinbusSrp
         
         return $result;
     }
-    
-    /**
-     * @return BigInteger The client verifier 'v'.
-     */
-    public function getVerifier()
-    {
-        return $this->v;
-    }
 
-    /**
-     * @return BigInteger The client salt 's'.
-     */
-    public function getSalt()
-    {
-        return $this->salt;
-    }
-    
-    /**
-     * @return string The user id 'I'.
-     */
-    public function getUserID()
-    {
-        return $this->userID;
-    }
 }
