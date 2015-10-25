@@ -2,9 +2,12 @@
 
 Copyright (c) Simon Massey, 2015
 
-Demo of Secure Remote Password (SRP-6a) protocol implementation of a browser authenticating to a PHP server using the [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js) Javascript library. **Note** Please read the [Thinbus documentation page](https://bitbucket.org/simon_massey/thinbus-srp-js) before attempting to use this demo code. 
+Demo of Secure Remote Password (SRP-6a) protocol implementation of a browser authenticating to a PHP server using the [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js) Javascript library. 
+**Note** Please read the [Thinbus documentation page](https://bitbucket.org/simon_massey/thinbus-srp-js) before attempting to use this demo code. 
 
-This work is based on [Ruslan Zazvacky's SRP PHP demo](https://github.com/RuslanZavacky/srp-6a-demo) and registers users into a SQLite database. It is very artificial as both the registration and login forms are shown on a single page. In a real application the registration form would only ever be shown to the user once. Logging in using the demo page doesn't take you into a main application. It only uses AJAX to confirm that login is successful. With a real application the login page upon successful login should GET the main application landing page. That would unload the login page which would delete the Thinbus SRP session object as recommended on the [Thinbus page](https://bitbucket.org/simon_massey/thinbus-srp-js). 
+This work is based on [Ruslan Zazvacky's SRP PHP demo](https://github.com/RuslanZavacky/srp-6a-demo) and registers users into a SQLite database. 
+It is very artificial as it only uses AJAX to confirm that login is successful. With a real application the login page upon successful login should GET the main application landing page. 
+That would unload the login page which would delete the Thinbus SRP session object as recommended on the [Thinbus page](https://bitbucket.org/simon_massey/thinbus-srp-js). 
 
 The core PHP library files are in the `thinbus` folder:
 
@@ -12,6 +15,11 @@ The core PHP library files are in the `thinbus` folder:
 * `thinbus/thinbus-srp.php` PHP port of the Thinbus SRP6JavaClientSession based on code by [Ruslan Zavacky](https://github.com/RuslanZavacky/srp-6a-demo).
 * `thinbus/BigInteger.php` pear.php.net [BigInteger math package](http://pear.php.net/package/BigInteger).
 * `thinbus/srand.php` strong random numbers from [George Argyros](https://github.com/GeorgeArgyros/Secure-random-bytes-in-PHP) avoiding known buggy versions of random libraries. 
+
+The core Thinbus JavaScript library files are in the `resources`thinbus` folder: 
+
+* `thinbus/rfc5054-safe-prime-config.js` A sample configuaration. See the main thinbus documentation for how to create your own safe prime. 
+* `thinbus/thinbus-srp6a-sha256-versioned.js` The thinbus JS library which is tested in the java project. See the header in that file which state the version. 
 
 The file `thinbus-srp-config.php` contains the SRP constants which looks something like: 
 
@@ -24,30 +32,18 @@ $SRP6CryptoParams = [
 ];
 ```
 
-The numeric constants must match the values configured in the JavaScript; see the [Thinbus documentation](https://bitbucket.org/simon_massey/thinbus-srp-js). Consider creating your own large safe prime values using openssl using the Thinbus instructions. 
+The numeric constants must match the values configured in the JavaScript; see the [Thinbus documentation](https://bitbucket.org/simon_massey/thinbus-srp-js). 
+Consider creating your own large safe prime values using openssl using the Thinbus instructions. 
 
-The demo application comprises of the following top level php files. It saves user SRP data in a [SQLite](http://php.net/manual/en/book.sqlite.php) flat file database at `/tmp/srp_db.txt` as configured in the file `require.php`: 
+The demo application comprises of the following top level php demo files. 
+It saves user SRP data in a [SQLite](http://php.net/manual/en/book.sqlite.php) flat file database at `/tmp/srp_db.txt` as configured in the file `require.php`: 
 
 * `require.php` a fragment to pull in the SRP constants, Thinbus library, RedBean library. It also initialises the SQLite database. 
 * `rb.php` [RedBeanPHP](http://redbeanphp.com) "an easy-to-use, on-the-fly ORM for PHP" used to abstract the database solely from the convenience of the demo.   
 * `register.php` saves the user email, salt and verifier.  
 * `login.php` loads the user salt and verifier to perform the SRP6a protocol to authenticated the user. 
 
-To authenticated a user the browser first uses AJAX to fetch the salt `s` and the server challenge `B` using ajax. 
-It then generates a random `A` and computes the password proof `M1` which are concated together and used to login. 
-If the user password proof is correct the `login.php` code sets two session variables:
-
-* `SRP_USER_ID` the authenticated user id
-* `SRP_SESSION_KEY` a strong shared session key `K=H(s)` which could be used for further cryptography
-
-You can use the authenticated `SRP_USER_ID` variable to protect senstive pages with something like the following: 
-
-```
-if( empty($_SESSION['SRP_USER_ID'] ) ) {
-    // user is not authenticated
-    exit();
-} 
-```
+Note those files are for demo purpose only. The are not part of the Thinbus library and would normally not be used by someone as they are not part of the core library code. 
 
 Please read the recommendations in the main thinbus documentation and take additional steps such as using HTTPS and encrypting the password verifier in the database which are not covered in this demo. 
 

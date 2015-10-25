@@ -1,86 +1,88 @@
 <?php
 /**
+ * WARNING: Do not use this file in production. This demo shows loading
+ * the user salt and verifier from a database. You should use your own code
+ * to do that or consider using an opensource content management system
+ * that has its logic for loading the user so you only need to do is add
+ * additional columns for the salt and verifier.
+ *
+ * The only parts of this file that are actually real code are the three lines
+ * containing the variable "$srp". Everything else is disposable demo code.
+ *
+ * The code below is the "AJAX /challenge" logic of the following diagram:
+ *
+ * http://simon_massey.bitbucket.org/thinbus/login.png
+ *
+ * @see https://bitbucket.org/simon_massey/thinbus-srp-js
+ *
  * @author      ruslan.zavackiy
  * @author      Simon Massey
- * @see http://simon_massey.bitbucket.org/thinbus/login.png
  */
 require 'require.php';
 
-if (! empty($_POST['challenge'])) {
-    $result = array();
-    /*
-     * Look the user up in the database
-     */
-    $user = R::findOne('user', 'email = :email', array(
-        ':email' => $_POST['email']
-    ));
-    
-    if (empty($user)) {
-        $result = array(
-            'error' => 'No user with such email'
-        );
-    } else {
-        /*
-         * If we have a user create a one-time random challenge and store the SRP object in the
-         * _SESSION so that we can later check the password proof for the challenge.
-         * If you don't want to use _SESSION then you can store this in your DB.
-         * Return JSON with the salt the user registered with and the one-time random challenge.
-         */
-        $srp = new ThinbusSrp($SRP6CryptoParams["N_base10"], $SRP6CryptoParams["g_base10"], $SRP6CryptoParams["k_base16"], $SRP6CryptoParams["H"]);
-        
-        $B = $srp->step1($_POST['email'], $user->password_salt, $user->password_verifier);
-        
-        $serial = serialize($srp);
-        
-        $_SESSION['SRP'] = $serial;
-        
-        $result = array(
-            'salt' => $user->password_salt,
-            'b' => $B
-        );
-    }
-    
-    echo json_encode($result);
-    
-    exit();
-} elseif (! empty($_POST['password'])) {
+$result = array();
+
+if (! empty($_POST['password'])) {
+    $email = $_POST['email'];
     $password = $_POST['password'];
     try {
-        /*
-         * Password is of the form M1.":".A
-         * Use the SRP object to check the password proof.
-         * If it is good set the SRP_USER_ID and SRP_SESSION_KEY in the session.
+        /**
+         * The Javascript sends the SRP data packed into the password as M1+":"+A.
+         * This makes it easier to integration SRP with an existing content management
+         * system or security framework that expects only one password string to check.
          */
-        $serial = $_SESSION['SRP'];
-        $srp = unserialize($serial);
         $M1A = explode(':', $password);
         $M1 = $M1A[0];
         $A = $M1A[1];
         
-        try {
-            $M2 = $srp->step2($A, $M1);
-            $key = $srp->getSessionKey();
-            $_SESSION['SRP_SESSION_KEY'] = $key;
-            $userId = $srp->getUserID();
-            $_SESSION['SRP_USER_ID'] = $userId;
+        /**
+         * The following code is disposable demo code.
+         * It is entirely up to you how you store the object between browser
+         * requiests you could use your own database access code or you
+         * could store in the $_SESSION.
+         */
+        
+        $authentication = R::findOne('authentication', 'email = :email', array(
+            ':email' => $email
+        ));
+        
+        if (! empty($authentication)) {
+            
+            $srp = unserialize($authentication->srp);
+            
+            /**
+             * This is the actual SRP authorisation logic which throws an exception if the password proof is bad.
+             */
+            $srp->step2($A, $M1);
+            
+            /**
+            This result is actually an optional proof of a shared session key that
+            the client could verify.
+             */
             $result = array(
-                'M2' => $M2
+                'message' => 'Success!'
             );
-            unset($_SESSION['SRP']);
-            include __DIR__ . '/private.php';
-        } catch (Exception $e) {
-            $_REQUEST['SRP_ERROR'] = "Authentication failed";
-            include __DIR__ . '/signin.php';
+            
+        } else {
+            $result = array(
+                'error' => 'No prior challenge.'
+            );
         }
+        
     } catch (Exception $e) {
-        error_log("got an error trying to process password '".$password."'\n".$e->getMessage(), 0);
-        $_REQUEST['SRP_ERROR'] = "Authentication failed";
-        include __DIR__ . '/signin.php';
+        header('HTTP/1.0 403 Forbidden');
+        $result = array(
+            'error' => '403 Forbidden.'
+        );
     }
-    exit();
+} else {
+    header('HTTP/1.0 400 Bad request');
+    $result = array(
+        'error' => 'No password found in post.'
+    );
 }
 
-error_log(__FILE__." got niether a _POST['challenge'] nor a _POST['password'] so ignoring", 0);
+echo json_encode($result);
 
 exit();
 

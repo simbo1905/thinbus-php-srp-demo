@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Signup</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<!-- Include Thinbus SRP safe prime config first then minimised Thinbus SRP JS crypo library -->
+<script src="./resources/thinbus/rfc5054-safe-prime-config.js"></script>
+<script src="./resources/thinbus/thinbus-srp6a-sha256-versioned.js"></script>
+
+<!-- The rest of the includes are demo app only and are not part of the thinbus library -->	
+<link href="./resources/css/bootstrap.min.css" rel="stylesheet"
+	media="screen" />
+<link href="./resources/css/core.css" rel="stylesheet" media="screen" />
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="./resources/js/bootstrap.min.js"></script>
+<script src="./resources/js/simple-password-meter.js"></script>
+<script src="./resources/js/signup.js"></script>
+</head>
+<body>
+	<form id="register-form" class="form-narrow form-horizontal"
+		method="post">
+		<fieldset>
+			<legend>Please Sign Up</legend>
+			<div class="form-group">
+				<label for="email" class="col-lg-2 control-label">Email</label>
+				<div class="col-lg-10">
+					<input id="email-login" value="ruslan.zavackiy@gmail.com"
+						name="email" type="text" class="form-control"
+						placeholder="Email address" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="password" class="col-lg-2 control-label">Password</label>
+				<div class="col-lg-10">
+					<input id="password" name="password" type="password"
+						class="form-control" placeholder="Password" /> Strength: <span
+						id="strength_score">0</span> <span id="strength_human">None</span>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-lg-offset-2 col-lg-10">
+					<button id="registerBtn" type="submit" class="btn btn-default">Sign
+						up</button>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-lg-offset-2 col-lg-10">
+					<p>
+						Already have an account? <a href="./signin.html">Sign In</a>
+					</p>
+				</div>
+			</div>
+			<input id="password-salt" type="hidden" name="salt" /> <input
+				id="password-verifier" type="hidden" name="verifier" />
+		</fieldset>
+		<div id="alert-danger" class="alert alert-danger">
+			Error<br />
+		</div>
+		<div id="alert-success" class="alert alert-success">
+			<strong>Success!</strong> Indicates a successful or positive action.
+		</div>
+	</form>
+	<script>
+  $("#alert-danger").hide();
+  $("#alert-success").hide();
+  
+  $(function () {
+	  
+		/**
+		 * See http://simon_massey.bitbucket.org/thinbus/register.png
+		 * @param registerUrl The URL to post the email, salt and verifier. 
+		 * @param emailId The id of the form input field where the user gives their id/email
+		 * @param formId The form who's onSubmit will run the SRP protocol. 
+		 * @param registerBtnId The button to be disabled until the form is filled in. 
+		 * @param passwordId The id of the password field used to generate the password verifier. 
+		 * @param passwordSaltId The field to populate with the generated salt. 
+		 * @param passwordVerifierId The field to populate with the generated password verifier. 
+		 * @param whitelistFields The fields to post to the server. MUST NOT INCLUDE THE RAW PASSWORD. Some frameworks embed a CSRF token in every form which must be submitted with the form so that hidden field can be whitelisted. 
+		 */
+	  
+	    Register.initialize({
+	    	registerUrl: './register.php',
+	        emailId: '#email-login',
+	        formId: '#register-form',
+	        registerBtnId: '#registerBtn',
+	        passwordId: '#password',
+	        passwordSaltId: '#password-salt',
+	        passwordVerifierId: '#password-verifier',
+	        whitelistFields: [
+              'email',
+              'salt',
+              'verifier'
+            ]
+	      });
+  });
+</script>
+</body>
+</html>
