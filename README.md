@@ -19,8 +19,8 @@ The core PHP library files are in the `thinbus` folder:
 
 The core Thinbus JavaScript library files are in the `resources/thinbus` folder: 
 
-* `thinbus/rfc5054-safe-prime-config.js` A sample configuaration. See the main thinbus documentation for how to create your own safe prime. 
-* `thinbus/thinbus-srp6a-sha256-versioned.js` The thinbus JS library which is tested in the Java project. See the header in that file which state the version. 
+* `thinbus/rfc5054-safe-prime-config.js` A sample configuration. See the main thinbus documentation for how to create your own safe prime. 
+* `thinbus/thinbus-srp6a-sha256-versioned.js` The thinbus JS library which is tested in the Java project. See the header in that file which states the version. 
 
 The file `thinbus-srp-config.php` contains the SRP constants which looks something like: 
 
@@ -36,7 +36,7 @@ $SRP6CryptoParams = [
 The numeric constants must match the values configured in the JavaScript; see the [Thinbus documentation](https://bitbucket.org/simon_massey/thinbus-srp-js). 
 Consider creating your own large safe prime values using openssl using the Thinbus instructions. 
 
-The files named above are Thinbus library code and are supported. The rest of the demo applicaction is purely for demonstration purposes only and not 
+The files named above are Thinbus library code and are supported. The rest of the demo application is purely for demonstration purposes only and not 
 intended to be deployed into production. The idea is that you have your own user management and user authorisation logic and you simply want to 
 swap out plain text password authentication with SRP authentication. The Thinbus core library provides the cryptography and you will supply your own 
 HTML, AJAX and database access logic. SRP is independent of those such things and they will be specific to your application. 
@@ -51,8 +51,8 @@ The demo application comprises of the following top level php demo files:
 * `login.php` verifies the user password proof. Note that the server needs to remember the challenge that it gave the client to check the proof. The demo code stores that in the database you could choose to hold it in the $_SESSION instead. 
 
 Once again it is expected that you have your own code for loading and saving user data to a real database and your own code, or framework code, for handling authorisation of 
-what the authenticated users can or cannot do. Modifying the demo files to support your application may simply be harder than just modifying your application to only use 
-the core Thinbus library code. 
+what the authenticated users can or cannot do. Modifying the demo files to support your application may simply be harder than just modifying your application to simply use 
+the mimimum methods calls to the core Thinbus library to perform authentication. 
 
 Please read the recommendations in the main thinbus documentation and take additional steps such as using HTTPS and encrypting the password verifier in the database which are not covered in this demo. 
 
