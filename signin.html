@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Sign In</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<!-- Include Thinbus SRP safe prime config first then minimised Thinbus SRP JS crypo library -->
+<script src="./resources/thinbus/rfc5054-safe-prime-config.js"></script>
+<script src="./resources/thinbus/thinbus-srp6a-sha256-versioned.js"></script>
+
+<!-- The rest of the includes are demo app only and are not part of the thinbus library -->
+<link href="./resources/css/bootstrap.min.css" rel="stylesheet"
+	media="screen" />
+<link href="./resources/css/core.css" rel="stylesheet" media="screen" />
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="./resources/js/signin.js"></script>
+</head>
+<body>
+	<form id="login-form" class="form-narrow form-horizontal" method="post">
+		<fieldset>
+			<legend>Please Sign In</legend>
+			<div class="form-group">
+				<label for="email-login" class="col-lg-2 control-label">Email</label>
+				<div class="col-lg-10">
+					<input type="text" class="form-control" id="email-login"
+						placeholder="Email" name="email" value="ruslan.zavackiy@gmail.com" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="password-login" class="col-lg-2 control-label">Password</label>
+				<div class="col-lg-10">
+					<input type="password" class="form-control" id="password-login"
+						placeholder="Password" name="password" />
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-lg-offset-2 col-lg-10">
+					<button type="submit" class="btn btn-default" id="loginBtn">Sign
+						in</button>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-lg-offset-2 col-lg-10">
+					<p>
+						New here? <a href="./signup.html">Sign Up</a>
+					</p>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+
+	<div id="alert-danger" class="alert alert-danger">
+		Error<br />
+	</div>
+	<div id="alert-success" class="alert alert-success">
+		<strong>Success!</strong> Indicates a successful or positive action.
+	</div>
+
+	<div id="alert-info" class="alert alert-info">
+		<strong>Info!</strong> Indicates a neutral informative change or
+		action.
+	</div>
+
+	<script>
+		$("#alert-danger").hide();
+		$("#alert-success").hide();
+		$("#alert-info").hide();
+		$("#alert-info").html("");
+		$(function() {
+			/**
+			 * The following default options may overridden by passing a customer options object into `initialize` method. 
+			 * See http://simon_massey.bitbucket.org/thinbus/login.png
+			 * @param challengeUrl The URL to do the AJAX lookup to get the user's salt `s` and one-time random server challenge `B`. 
+			 * @param securityCheckUrl The URL to post the password proof. 
+			 * @param emailId The id of the form input field where the user gives their id/email used in the AJAX fetch of the user's salt and challenge. 
+			 * @param passwordId The id of the password field used to compute a proof-of-password with the server one-time challenge and the user's salt. 
+			 * @param formId The form who's onSubmit will run the SRP protocol. 
+			 * @param whitelistFields The fields to post to the server. MUST NOT INCLUDE THE RAW PASSWORD. Some frameworks embed a CSRF token in every form which must be submitted with the form so that hidden field can be whitelisted. 
+			 * @param debugOutput The demo overrides this to output to html in the page. 
+			 */
+			Login.initialize({
+				challengeUrl : './challenge.php',
+				securityCheckUrl : './login.php',
+				emailId : '#email-login',
+				passwordId : '#password-login',
+				formId : '#login-form',
+				whitelistFields : [ 'email' ],
+				debugOutput : function(msg) {
+					console.log(msg);
+					$("#alert-info").show();
+					$('#alert-info').append('<b>' + msg + '</b><br />');
+				}
+			});
+		});
+	</script>
+</body>
+</html>

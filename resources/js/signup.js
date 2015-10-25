@@ -1,51 +1,35 @@
 /**
- * The Register object uses jQuery AJAX and an SRP6JavascriptClientSessionSHA256
- * to generate a salt and a verifier which is sent to the server. See
- * http://simon_massey.bitbucket.org/thinbus/register.png
+ * Note that this is all disposable demo code. You don't need to use jQuery 
+ * or even AJAX if you do not wish to. 
+ * 
+ * Only the three lines using "srpClient" are mandatory code.  
+ * 
+ * See http://simon_massey.bitbucket.org/thinbus/register.png
  */
 var Register = {
-	/**
-	 * The following options may be overridden by passing a customer options object into `initialize` method. 
-	 * See http://simon_massey.bitbucket.org/thinbus/register.png
-	 * @param registerUrl The URL to post the email, salt and verifier. 
-	 * @param registerBtnId The button to disable until the user has filled in the form. 
-	 * @param formId The form who's onSubmit will run the SRP protocol. 
-	 * @param emailId The id of the form input field where the user gives their id/email
-	 * @param passwordId The id of the password field used to generate the password verifier. 
-	 * @param passwordSaltId The field to populate with the generated salt. 
-	 * @param passwordVerifierId The field to populate with the generated password verifier. 
-	 * @param whitelistFields The fields to post to the server. MUST NOT INCLUDE THE RAW PASSWORD. Some frameworks embed a CSRF token in every form which must be submitted with the form so that hidden field can be whitelisted. 
-	 */
-	options : {
-		registerUrl : './register',
-		registerBtnId : '#registerBtn',
-		formId : '#register-form',
-		emailId : '#email-login',
-		passwordId : '#password',
-		passwordSaltId : '#password-salt',
-		passwordVerifierId : '#password-verifier',
-		whitelistFields : [ 'email', 'salt', 'verifier' ]
-	},
+
+	options : null,
 
 	initialize : function(options) {
 		var me = this;
-
-		me.disableSubmitBtn();
 
 		if (options) {
 			me.options = options;
 		}
 
+		me.disableSubmitBtn();
+
 		// attach logic to the form onSubmit
 		$(options.formId).on('submit', $.proxy(function(e) {
 			// We MUST prevent default submit logic which would submit the raw password so that we can do the SRP protocol instead. 
 			e.preventDefault();
+			// Do the post of the random salt and verifier. 
 			me.postSaltAndVerifier();
 		}, me));
 
 		// attach logic to the email field onKeyUp
 		$(options.emailId).on('keyup', $.proxy(function(event) {
-			// see recommendation in the thinbus docs 
+			// see recommendation in the thinbus docs to advance the random number generated in browsers that do not have secure randoms. 
 			random16byteHex.advance(Math.floor(event.keyCode / 4));
 		}, me));
 
@@ -54,9 +38,10 @@ var Register = {
 				'keyup',
 				$.proxy(function(event) {
 					// only enable the button if the user has entered some password
+					// You should connect this logic to the password stength meter and disable button for weak passwords! 
 					$(event.currentTarget).val().length ? me.enableSubmitBtn()
 							: me.disableSubmitBtn();
-					// see recommendation in the thinbus docs 
+					// see recommendation in the thinbus docs to advance the random number generated in browsers that do not have secure randoms. 
 					random16byteHex.advance(Math.floor(event.keyCode / 4));
 				}, me));
 	},
@@ -70,15 +55,17 @@ var Register = {
 	},
 
 	postSaltAndVerifier : function() {
+		
+		$("#alert-danger").hide();
+		$("#alert-success").hide();
+		
 		var me = this;
 
 		var email = me.getEmail();
 		var password = me.getPassword();
 
 		var srpClient = new SRP6JavascriptClientSessionSHA256();
-
 		var salt = srpClient.generateRandomSalt();
-
 		var verifier = srpClient.generateVerifier(salt, email, password);
 
 		$(me.options.passwordSaltId).attr('value', salt);
@@ -100,7 +87,15 @@ var Register = {
 		console.log('Client: ' + JSON.stringify(postValues));
 
 		$.post(me.options.registerUrl, postValues, function(response) {
-			$('body').html(response);
+			console.log("server says: "+response );
+			var parsed_data = JSON.parse(response);
+			if( parsed_data.hasOwnProperty('error') ) {
+				$("#alert-danger").html(parsed_data.error);
+				$("#alert-danger").show();
+			} else if( parsed_data.hasOwnProperty('message') ) {
+				$("#alert-success").html(parsed_data.message);
+				$("#alert-success").show();	
+			}
 		});
 
 	},
