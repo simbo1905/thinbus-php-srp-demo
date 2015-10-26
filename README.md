@@ -3,7 +3,7 @@
 Copyright (c) Simon Massey, 2015
 
 Demo of Secure Remote Password (SRP-6a) protocol implementation of a browser authenticating to a PHP server using the [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js) Javascript library. 
-**Note** Please read the [Thinbus documentation page](https://bitbucket.org/simon_massey/thinbus-srp-js) before attempting to use this demo code. The demo code may or may not be running 
+**Note** Please read the [Thinbus documentation page](https://bitbucket.org/simon_massey/thinbus-srp-js) before attempting to use this demo code. This demo code may or may not be running 
 on the [demo server](http://thinbusphp-n00p.rhcloud.com/).
 
 This work is based on [Ruslan Zazvacky's SRP PHP demo](https://github.com/RuslanZavacky/srp-6a-demo) and registers users into a SQLite database. 
@@ -43,7 +43,7 @@ HTML, AJAX and database access logic. SRP is independent of those such things an
 is that:
 
 * Every users has a password verifier and a unique salt that you store in your database. 
-* Evern login attempt first gets a unique challange and the user salt from the server then posts a one-time proof-of-passowrd. This means the server has to hold the thinbus object that generated the challenge long enough to verify the user one-time proof-of-password. 
+* Every login attempt first gets a one-time random challange and the user salt from the server and uses that to compute a one-time proof-of-passowrd. It then posts the proof-of-password to the server which checks it using the client verifier and the one-time challenge given to the user. This means the server has to hold the thinbus object that generated the challenge long enough to verify the corresponding user proof-of-password. 
 
 The following diagram shows shows what you need to know: 
 
@@ -53,16 +53,16 @@ The demo saves the use salt and verifier in an [SQLite](http://php.net/manual/en
 The demo application comprises of the following top level php demo files: 
 
 * `require.php` a fragment to pull in the SRP constants, Thinbus library, RedBean library. It also initialises the SQLite database. 
-* `rb.php` [RedBeanPHP](http://redbeanphp.com) "an easy-to-use, on-the-fly ORM for PHP" used to abstract the database solely for the convenience of the demo.   
+* `rb.php` [RedBeanPHP](http://redbeanphp.com) "an easy-to-use, on-the-fly ORM for PHP" used to abstract the database solely for the convenience of this demo. You are not expected to use this library code in your own application.   
 * `register.php` accepts a POST with the user email, salt and verifier and saves them into the SQLite database. It is expected you have your own logic for registering users and you are going to modify that to save a salt and verifier for each user rather than use this code.
-* `challenge.php` accepts a POST wih the user email, looks up the salt and verifier in the SQLite database, and uses Thinbus core library code to generate a one-time server challenge. It saves the Thinbus object in the SQLite database in an 'authentication' table so that it can look up everything needed to verify the client password proof based on the one-time challenge. You should consider rewriting this to use your own database access library code.  
-* `login.php` verifies the user password proof. Note that the server needs to remember the one-time challenge that it gave the client to check the one-time password proof. It therefore looks up the object that was created to issue the one-time challenge in the SQLite database. You should consider rewriting this to use your own database access library code. If the password proof not correct the thinbus core library code will throw a PHP exception and the user authentication has failed. 
+* `challenge.php` accepts a POST with the user email, looks up the salt and verifier in the SQLite database, and uses Thinbus core library code to generate a one-time server challenge. It saves the Thinbus object in the SQLite database in an 'authentication' table so that it can look up everything needed to verify the client password proof based on the one-time challenge. You should consider rewriting this to use your own database access library code.  
+* `login.php` verifies the user password proof. Note that the server needs to remember the one-time challenge that it gave the client to check the one-time password proof. It therefore looks up the object that created the one-time challenge in the SQLite database. You should consider rewriting this to use your own database access library code. It uses the core Thinbus library code to check the password proof which will  throw a PHP exception if authentication fails. 
 
 Once again it is expected that you have your own code for loading and saving user data to a real database and your own code, or framework code, for handling authorisation of 
 which pages the authenticated users can or cannot access. Modifying the demo files to support your application may be harder than just modifying your current application to simply use the 
 core Thinbus library at `thinbus\*.php` so that you can use your own favourite AJAX libraries and PHP database access library code.   
 
-Please read the recommendations in the main thinbus documentation and take additional steps such as using HTTPS and encrypting the password verifier in the database which are not covered in this demo. 
+Please read the recommendations in the main thinbus documentation and take additional steps such as using HTTPS and encrypting the password verifier in the database which are not shown in this demo. 
 
 ## License
 
