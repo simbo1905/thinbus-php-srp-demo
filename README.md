@@ -51,8 +51,8 @@ The demo application comprises of the following top level php demo files:
 * `login.php` verifies the user password proof. Note that the server needs to remember the challenge that it gave the client to check the proof. The demo code stores that in the database you could choose to hold it in the $_SESSION instead. 
 
 Once again it is expected that you have your own code for loading and saving user data to a real database and your own code, or framework code, for handling authorisation of 
-what the authenticated users can or cannot do. Modifying the demo files to support your application may simply be harder than just modifying your application to simply use 
-the mimimum methods calls to the core Thinbus library to perform authentication. 
+what the authenticated users can or cannot do. Modifying the demo files to support your application may be harder than just modifying your current application to simply use the 
+core files at `thinbus\*.php` and writing your own AJAX code using your favourite JS and PHP libraries. 
 
 Please read the recommendations in the main thinbus documentation and take additional steps such as using HTTPS and encrypting the password verifier in the database which are not covered in this demo. 
 
