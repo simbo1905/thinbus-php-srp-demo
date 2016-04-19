@@ -24,5 +24,3 @@ PLEASE NOTE: The Cron cartridge must be installed in order to run the configured
 
 For more information about cron, consult the documentation:
 https://docs.openshift.org/origin-m4/oo_cartridge_guide.html#cron
-https://docs.openshift.org/origin-m4/oo_user_guide.html#localhost-directory-structure
-
