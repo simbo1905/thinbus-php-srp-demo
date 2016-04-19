@@ -264,7 +264,7 @@ class BigInteger {
    * @return BigInteger
    * @access public
    */
-  function BigInteger($x = 0, $base = 10) {
+  function __construct($x = 0, $base = 10) {
     if (!defined('BigInteger_MODE')) {
       switch (true) {
         case extension_loaded('gmp'):
