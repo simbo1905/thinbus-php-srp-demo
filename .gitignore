@@ -4,3 +4,4 @@
 .settings
 srp_db.txt
 .project
+phpunit.phar

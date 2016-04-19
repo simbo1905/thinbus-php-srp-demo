@@ -66,6 +66,16 @@ core Thinbus library at `thinbus\*.php` so that you can use your own favourite A
 
 Please read the recommendations in the main thinbus documentation and take additional steps such as using HTTPS and encrypting the password verifier in the database which are not shown in this demo. 
 
+## Run The Unit Tests
+
+```sh
+# download the php phar if you don't have it installed globally
+wget https://phar.phpunit.de/phpunit.phar
+php phpunit.phar --version
+# run the unit tests
+php phpunit.phar ThibusTest.php
+```
+
 ## License
 
 ```

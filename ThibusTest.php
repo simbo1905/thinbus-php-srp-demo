@@ -6,7 +6,7 @@
  */
 
 
-require_once 'PHPUnit/Framework/TestCase.php';
+//require_once 'PHPUnit/Framework/TestCase.php';
 
 require_once 'thinbus/thinbus-srp.php';
 
@@ -121,6 +121,12 @@ class ThibusTest extends PHPUnit_Framework_TestCase
     public function testSha1Vectors()
     {
         $projectDir = getenv('ZEND_PHPUNIT_PROJECT_LOCATION');
+        
+        $canary = 'x' . getenv('ZEND_PHPUNIT_PROJECT_LOCATION') . 'x';
+        
+        if ($canary == 'xx') {
+            $projectDir = getcwd();
+        }
         
         // parse your data file however you want
         $data = array();
