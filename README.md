@@ -91,7 +91,7 @@ php phpunit.phar --version
 php phpunit.phar ThibusTest.php
 ```
 
-If all test pass should output a final line such as `OK (5 tests, 204 assertions)`. If not raise an issue with the exact PHP version and the output of `phpinfo();`. 
+If all test pass should output a final line such as `OK (5 tests, 204 assertions)`. If not raise an issue with the exact PHP version and the output of `phpinfo();`
 
 Next run the local [built in webserver](http://php.net/manual/en/features.commandline.webserver.php) on your workstation and try to register then sign-in: 
 
