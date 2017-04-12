@@ -62,7 +62,7 @@ is that:
 
 The following diagram shows shows what you need to know: 
 
-![Thinbus SRP Login Diagram](http://simon_massey.bitbucket.org/thinbus/login.png "Thinbus SRP Login Diagram")
+![Thinbus SRP Login Diagram](http://simonmassey.bitbucket.io/thinbus/login.png "Thinbus SRP Login Diagram")
 
 The demo saves the use salt and verifier in an [SQLite](http://php.net/manual/en/book.sqlite.php) flat file database at `/tmp/srp_db.txt`. The location is configured in `require.php`. 
 The demo application comprises of the following top level php demo files that you probably *don't* want to use in your own application: 
