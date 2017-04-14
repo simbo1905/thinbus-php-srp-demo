@@ -124,6 +124,37 @@ class ThibusTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected_v_base16Str, $verifier);
     }
     
+    public function testVerifierRejectsBlanks() {
+        $success = true;
+        
+        try {
+            $this->SrpClient->generateVerifier('', 'x', 'y');
+            $success = false;
+        } catch (Exception $e) {
+            // good
+        }
+        
+        $this->assertTrue($success, 'blank salt was not detected');
+        
+        try {
+            $this->SrpClient->generateVerifier('x', '', 'y');
+            $success = false;
+        } catch (Exception $e) {
+            // good
+        }
+        
+        $this->assertTrue($success, 'blank identity was not detected');
+        
+        try {
+            $this->SrpClient->generateVerifier('x', 'y', '');
+            $success = false;
+        } catch (Exception $e) {
+            // good
+        }
+        
+        $this->assertTrue($success, 'blank password was not detected');
+    }
+    
     /**
      * Tests the PHP client session against test vectors taken from the JavaScript client.
      * This test mainly confirms that we can inject a random number such that the "a" and "A" will match for the latest steps. 
