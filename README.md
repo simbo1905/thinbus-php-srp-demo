@@ -30,7 +30,8 @@ The core PHP library files are in the `thinbus` folder:
 * `thinbus/thinbus-srp-config.php` SRP configuration global variables. Must be included before the thinbus library code. Must match the values configured in the JavaScript. 
 * `thinbus/thinbus-srp.php` PHP port of the Thinbus Java code based on code by [Ruslan Zavacky](https://github.com/RuslanZavacky/srp-6a-demo).
 * `thinbus/BigInteger.php` pear.php.net [BigInteger math package](http://pear.php.net/package/BigInteger).
-* `thinbus/srand.php` strong random numbers from [George Argyros](https://github.com/GeorgeArgyros/Secure-random-bytes-in-PHP) avoiding known buggy versions of random libraries. 
+* `thinbus/srand.php` strong random numbers from [George Argyros](https://github.com/GeorgeArgyros/Secure-random-bytes-in-PHP) avoiding known buggy versions of random libraries.
+* `thinbus/thinbus-srp-client.php` PHP client code contributed by Keith Wagner.     
 
 The core Thinbus JavaScript library files are in the `resources/thinbus` folder: 
 
