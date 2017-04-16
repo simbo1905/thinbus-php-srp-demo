@@ -146,12 +146,15 @@ class ThinbusSrp
         while (! $this->B || $this->B->powMod(new BigInteger(1), $this->N) === 0) {
             $this->b = $this->createRandomBigIntegerInRange();
             $gPowed = $this->g->powMod($this->b, $this->N);
-             $this->B = $this->k->multiply($this->v)
+            $this->B = $this->k->multiply($this->v)
                  ->add($gPowed)
                  ->powMod(new BigInteger(1), $this->N);
         }
         
         $this->Bhex = $this->stripLeadingZeros($this->B->toHex());
+        
+        // echo "s b:".$this->b."\n";
+        // echo "s B:".$this->Bhex."\n";
         
         $this->step = 1;
         
@@ -178,16 +181,26 @@ class ThinbusSrp
         }
         
         $u = new BigInteger($this->hash($Ahex . $this->Bhex), 16);
+        
+        // echo "c u:".$u->toHex()."\n";
+        
         $avu = $A->multiply($this->v->powMod($u, $this->N));
         
         $S = $avu->modPow($this->b, $this->N);
+        
+        // echo "s S:".$S."\n";
+        
         $Shex = $this->stripLeadingZeros($S->toHex());
+        
+        // echo "s S:".$Shex."\n";
         
         $this->K = $this->hash($Shex);
         
         $M = $this->stripLeadingZeros($this->hash($Ahex . $this->Bhex . $Shex));
         
         if( $M1hex != $M) {
+            // echo "error s c M:".$M1hex."\n";
+            // echo "error s s M:".$M."\n";
             throw new \Exception('Client M1 does not match Server M1.');
         }
         

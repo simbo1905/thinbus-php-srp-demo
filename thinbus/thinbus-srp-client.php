@@ -119,6 +119,7 @@ class ThinbusSrpClient
         $this->password = $password;
         while (! $this->A || $this->A->powMod(new BigInteger(1), $this->N) === 0) {
             $this->a = $this->createRandomBigIntegerInRange();
+            // echo "a:".$this->a."\n";
             $this->A = $this->g->powMod($this->a, $this->N);
         }
         $this->Astr = $this->A->toHex();
@@ -177,10 +178,19 @@ class ThinbusSrpClient
      */
     function generateVerifier($salt, $identify, $password)
     {
+        // echo "generateVerifier\n";
+        
         $this->salt = $salt;
         $X = $this->generateX($this->salt, $identify, $password);
         
         $this->v = $this->g->powMod($X, $this->N)->toHex();
+        
+        // echo "c s:".$salt."\n";
+        // echo "c i:".$identify."\n";
+        // echo "c p:".$password."\n";
+        // echo "c x:".$X."\n";
+        // echo "c x:".$X->toHex()."\n";
+        // echo "c v:".$this->v."\n";
         
         return $this->v;
     }
@@ -207,27 +217,63 @@ class ThinbusSrpClient
      */
     function step2($salt, $B)
     {
+        // echo "client step2\n";
         $this->salt = $salt;
         $this->Bstr = $B;
         
         $this->B = new BigInteger($this->Bstr, 16);
         
+        // echo "c rawb:".$B."\n";
+        // echo "c b:".$this->B."\n";
+        
         if ($this->B->powMod(new BigInteger(1), $this->N) === 0) {
             throw new \Exception('Server sent invalid key: B mod N == 0.');
         }
         
-        $u = new BigInteger($this->hash($this->Astr . $this->Bstr), 16);
+        $rawu = $this->hash($this->Astr . $this->Bstr);
+        
+        // echo "c rawu:".$rawu."\n";
+        
+        $u = new BigInteger($rawu, 16);
+        
+        // echo "c u:".$u->toHex()."\n";
+        
         $x = $this->generateX($this->salt, $this->userID, $this->password);
         
-        $g = $u->multiply($x)->add($this->a);
-        $f = $this->g->modPow($x, $this->N)->multiply($this->k);
-        $S = $this->B->subtract($f)->modPow($g, $this->N);
+        // echo "c x:".$x."\n";
+        
+        $uxa = $u->multiply($x)->add($this->a);
+        
+        // echo "c uxa:".$uxa."\n";
+        
+        $xk = $this->g->modPow($x, $this->N)->multiply($this->k);
+        
+        // echo "c xk:".$xk."\n";
+        
+        // echo "c B:".$this->B."\n";
+        // echo "c B:".$this->B->toHex()."\n";
+        
+        $delete = $this->B->subtract($xk);
+        
+        // echo "c delete:".$delete."\n";
+        
+        $S = $this->B->subtract($xk)->modPow($uxa, $this->N);
+        
+        // echo "c s:".$S."\n";
         
         $Shex = $this->stripLeadingZeros($S->toHex());
+        
+        // echo "c s:".$Shex."\n";
+        
         $this->K = $this->hash($Shex);
         
         $M = $this->stripLeadingZeros($this->hash($this->Astr . $this->Bstr . $Shex));
+        
+        // echo "c M1:".$M."\n";
+        
         $HAMK = $this->hash($this->Astr . $M . $Shex);
+        
+        // echo "c M2:".$HAMK."\n";
         
         $this->S = $S;
         $this->HAMK = $HAMK;
