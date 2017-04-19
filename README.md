@@ -1,8 +1,11 @@
-# Thinbus SRP PHP Demo
+# Thinbus SRP PHP
 
-Copyright (c) Simon Massey, 2015-2016
+Copyright (c) Simon Massey, 2015-2017
 
-Demo of Secure Remote Password (SRP-6a) protocol implementation of a browser authenticating to a PHP server using the [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js) Javascript library. 
+Thinbus SRP PHP is an implementation of the SRP-6a Secure Remote Password  protocol. It is compatible with [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js) a JavaScript SRP implementation. This allows you to generate a verifier for a temporary password in PHP and have users login to a PHP server using a browser.  
+
+This repository also includes a slightly contrived demo of a browser running the [Thinbus Javascript library](https://bitbucket.org/simon_massey/thinbus-srp-js) authenticating to a PHP server. 
+
 **Note** Please read the [Thinbus documentation page](https://bitbucket.org/simon_massey/thinbus-srp-js) before attempting to use this demo code. 
 
 ## Trying The Demo
@@ -16,8 +19,6 @@ php -S localhost:8000
 ```
 
 This lets you try this demo with your PHP version and use browser developer tools to inspect the AJAX traffic. Note the built in webserver is very slow compared to a real PHP server install. 
-
-There is also an alternative [thinbus-php-demo2 by Benny Nissen](https://bitbucket.org/beastybeast/thinbus-php-demo2/overview). 
 
 ## Using In Your Application
 
@@ -112,10 +113,8 @@ Your webserver might not have permission to write to `/tmp/srp_db.txt` see the d
 If the demo works locally but doesnt work on your main server then I suggest you use the browser developer tools to compare the network traffic 
 (particularly the AJAX calls) that happen when running locally verses running on your main server to see if the server traffic indicates a server configuration problem. 
 
-If you got this far and could not find any problems running the demo code locally nor on your server then I assume you are having problems using the thinbus library 
-code in your own application. Deploy the demo app onto the same server as your own app and use browser developer tools to inspect the network traffic (particularly the AJAX calls)
-to compare what the traffic looks like between the working demo app and your own app. If the browser traffic seems okay double check that all the necessary config and database data 
-is being both saved and loaded correctly.
+If you got this far and could not find any problems running the demo code locally nor on your server then I assume you are having problems using the thinbus library code in your own application. Deploy the demo app onto the same server as your own app and use browser developer tools to inspect the network traffic (particularly the AJAX calls)
+to compare what the traffic looks like between the working demo app and your own app. If the browser traffic seems okay double check that all the necessary config and database data is being both saved and loaded correctly.
 
 ## License
 
