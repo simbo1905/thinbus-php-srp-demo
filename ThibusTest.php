@@ -24,7 +24,7 @@ class NotRandomSrp extends ThinbusSrp
         $this->notRandomNumber = new BigInteger($nr, 16);
     }
 
-    function createRandomBigIntegerInRange()
+    function createRandomBigIntegerInRange($n)
     {
         return $this->notRandomNumber;
     }
@@ -43,7 +43,7 @@ class NotRandomSrpClient extends ThinbusSrpClient
         $this->notRandomNumber = new BigInteger($nr, 16);
     }
 
-    function createRandomBigIntegerInRange()
+    function createRandomBigIntegerInRange($n)
     {
         return $this->notRandomNumber;
     }
@@ -98,9 +98,9 @@ class ThibusTest extends PHPUnit_Framework_TestCase
     }
     
     /**
-     * There was a bug in the old version of the BigInteger library I was using which this test proves has been removed.  
+     * There was a bug in the old version of the BigInteger library which gave negative $S numbers for the server math.   
      */
-    public function testBigIntegerMaths() {
+    public function testBigIntegerServerMaths() {
         $N = new BigInteger("19502997308733555461855666625958719160994364695757801883048536560804281608617712589335141535572898798222757219122180598766018632900275026915053180353164617230434226106273953899391119864257302295174320915476500215995601482640160424279800690785793808960633891416021244925484141974964367107");
         $g = new BigInteger("2");
         $k = new BigInteger("1a3d1769e1d6337af78796f1802f9b14fbc20278fb6e15e4361beb38a8e7cd3a", 16);
@@ -120,6 +120,91 @@ class ThibusTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($S->abs(), $S);
         
         $this->assertEquals($expectedS, $S);
+    }
+    
+    /**
+     * There was a different bug in the old version of the BigInteger library which gave negative $S numbers for the client math.
+     */
+    public function testBigIntegerMaths2() {
+        $one = new BigInteger("1a3d1769e1d6337af78796f1802f9b14fbc20278fb6e15e4361beb38a8e7cd3a", 16);
+        $two = new BigInteger("6117132599428a87abb6b17b4325278d9c6a9fb15c03a5c935a423557d52533f", 16);
+        $neg = $one->subtract($one);
+        $N = new BigInteger("19502997308733555461855666625958719160994364695757801883048536560804281608617712589335141535572898798222757219122180598766018632900275026915053180353164617230434226106273953899391119864257302295174320915476500215995601482640160424279800690785793808960633891416021244925484141974964367107");
+        $g = new BigInteger("2");
+        $modP = $neg->modPow($g, $N);
+        $this->assertEquals($modP->abs(), $modP); 
+    }
+    
+    /**
+     * Unfortunately the PEAR Math_BigInteger library in the year 2017 doesn't have a getLength() method like the Java library so I had to code one.  
+     */
+    public function testBigIntegerPrecision() {
+        $expectedValues = array(
+                array(1,	"1"),
+                array(8,	"10000000"),
+                array(15,	"100000000000000"),
+                array(22,	"1000000000000000000000"),
+                array(29,	"10000000000000000000000000000"),
+                array(36,	"100000000000000000000000000000000000"),
+                array(43,	"1000000000000000000000000000000000000000000"),
+                array(50,	"10000000000000000000000000000000000000000000000000"),
+                array(57,	"100000000000000000000000000000000000000000000000000000000"),
+                array(64,	"1000000000000000000000000000000000000000000000000000000000000000"),
+                array(71,	"10000000000000000000000000000000000000000000000000000000000000000000000"),
+                array(78,	"100000000000000000000000000000000000000000000000000000000000000000000000000000"),
+                array(85,	"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+                array(92,	"10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+                array(99,	"100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+                array(106,	"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+            );
+        
+        $N_base10str = "255";
+        $g_base10str = "1";
+        $k_base16str = "1";
+        
+        $Srp = new ThinbusSrp($N_base10str, $g_base10str, $k_base16str, "sha256");
+        
+        for($i = 0; $i < 16; ++$i) {
+            $expected = $expectedValues[$i];
+            $expectedPrecision = $expected[0];
+            $base2Str = $expected[1];
+            $bi = new BigInteger($base2Str, 2);
+            $actualPrecision = $Srp->getPrecision($bi);
+            $this->assertEquals($expectedPrecision, $actualPrecision);
+        }
+    }
+    
+    public function testCreateRandomBigIntegerInRange() {
+        
+        $N_base10str = "255";
+        $N = new BigInteger($N_base10str, 10);
+        $g_base10str = "1";
+        $k_base16str = "1";
+        
+        $Srp = new ThinbusSrp($N_base10str, $g_base10str, $k_base16str, "sha256");
+        
+        $values = array();
+        for( $i = 0; $i < 256; ++$i) {
+            $values[$i] = 0;
+        }
+        for( $i = 0; $i < 1e3; ++$i) {
+            $r = $Srp->createRandomBigIntegerInRange($N);
+            $h = $r->toHex();
+            $n = hexdec($h);
+            $c = $values[$n];
+            $c2 = $c + 1;
+            $values[$n] = $c2;
+        }
+        
+        $this->assertEquals(0, $values[0]);
+        $this->assertEquals(0, $values[255]);
+        
+        $sum = 0;
+        for( $i = 0; $i < 256; ++$i) {
+            $sum = $sum + $values[$i];
+        }
+        
+        $this->assertEquals(1e3, $sum);
     }
     
     /**

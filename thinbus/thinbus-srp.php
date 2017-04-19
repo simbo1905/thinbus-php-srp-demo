@@ -1,11 +1,11 @@
 <?php
-
 require_once 'srand.php';
 require_once 'BigInteger.php';
+require_once 'thinbus-srp-common.php';
 
 /*
  * Copyright 2014 Ruslan Zavacky <ruslan.zavackiy@gmail.com>
- * Copyright 2015 Simon Massey
+ * Copyright 2015-2017 Simon Massey
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -43,73 +43,82 @@ require_once 'BigInteger.php';
  * you are not going to use the shared strong session key simply remove the object
  * from the location you had stored it to free up space in the session or database.
  */
-class ThinbusSrp
+class ThinbusSrp extends ThinbusSrpCommon
 {
+
     /**
      * To protect against dictionary attacks we refuse to generate new challenges
-     * or validate additional guesses of the password. This variable tracks
+     * or validate additional guesses of the password.
+     * This variable tracks
      * whether we have issued a challenge or checked a password proof and only
      * allows either of those to happen once.
      */
     protected $step = 0;
 
     /**
+     *
      * @var \BigInteger N
      */
     protected $N;
 
     /**
+     *
      * @var \BigInteger g
      */
     protected $g;
 
     /**
      * We require the 'k' to be configured as binary->BigInteger is not platform portable.
+     * 
      * @var \BigInteger k
      */
     protected $k;
 
     /**
+     *
      * @var \BigInteger The password verifier 'v'.
      */
     protected $v;
 
     /**
+     *
      * @var string The user identity 'I'.
      */
     protected $userID;
 
     /**
+     *
      * @var string A hex encoded secure randome number.
      */
     protected $b = null;
 
     /**
-     * @var \BigInteger|null The server one time ephemeral key derived from 'b'
+     *
+     * @var \BigInteger|null server one time ephemeral key derived from 'b'
      */
     protected $B = null;
 
     /**
+     *
      * @var srring A string version of B
      */
     protected $Bhex;
-    
+
     /**
      * A shared strong session key K=H(S)
      */
     protected $K;
-    
+
     /**
-     * name of the hashing algorith e.g. "sha256"
+     * name of the hashing algorith e.g.
+     * "sha256"
+     * 
      * @var string
      */
     protected $H;
 
-    protected function stripLeadingZeros($str) {
-        return ltrim($str, '0');
-    }
-    
     /**
+     *
      * @param string $N_base10str
      *            The N crypto parameter as string in base 10. Must match the parameter the client is using.
      * @param string $g_base10str
@@ -126,29 +135,33 @@ class ThinbusSrp
         $this->k = new BigInteger($k_base16str, 16);
         $this->H = $Hstr;
     }
-    
+
     /**
-	 * Returns the one-time server challenge `B` encoded as hex.
+     * Returns the one-time server challenge `B` encoded as hex.
      * Records the identity 'I' and password 'P' of the authenticating
-	 * user. Increments state to 1 to combat a dictionary attack.
-	 *
-     * @param unknown $userID The user id 'I'
-     * @param unknown $salt_base16str The user salt 's'. Currently unused although the http://srp.stanford.edu/design.html suggests using it in the M calculation as we use SHA256 we don't.
-     * @param unknown $v_base16str The user verifier 'v'
+     * user. Increments state to 1 to combat a dictionary attack.
+     *
+     * @param unknown $userID
+     *            The user id 'I'
+     * @param unknown $salt_base16str
+     *            The user salt 's'. Currently unused although the http://srp.stanford.edu/design.html suggests using it in the M calculation as we use SHA256 we don't.
+     * @param unknown $v_base16str
+     *            The user verifier 'v'
      * @return string The server challenge 'B'
      */
     public function step1($userID, $salt_base16str, $v_base16str)
     {
-        if($this->step != 0 ) throw new \Exception("Possible dictionary attack refusing to collaborate");
+        if ($this->step != 0)
+            throw new \Exception("Possible dictionary attack refusing to collaborate");
         $this->v = new BigInteger($v_base16str, 16);
         $this->userID = $userID;
         
         while (! $this->B || $this->B->powMod(new BigInteger(1), $this->N) === 0) {
-            $this->b = $this->createRandomBigIntegerInRange();
+            $this->b = $this->createRandomBigIntegerInRange($this->N);
             $gPowed = $this->g->powMod($this->b, $this->N);
             $this->B = $this->k->multiply($this->v)
-                 ->add($gPowed)
-                 ->powMod(new BigInteger(1), $this->N);
+                ->add($gPowed)
+                ->powMod(new BigInteger(1), $this->N);
         }
         
         $this->Bhex = $this->stripLeadingZeros($this->B->toHex());
@@ -163,16 +176,20 @@ class ThinbusSrp
 
     /**
      * Validates a password proof `M1` based on the client one-time public key `A`.
-	 * Increments state to 2 to combat a dictionary attack.
-	 *
-     * @param string $Ahex The client ephemerial key 'A'
-     * @param string $M1hex The client password proof 'M1'
+     * Increments state to 2 to combat a dictionary attack.
+     *
+     * @param string $Ahex
+     *            The client ephemerial key 'A'
+     * @param string $M1hex
+     *            The client password proof 'M1'
      * @throws \Exception If the password proof fails
      * @return string The server proof of the shared key 'S' and verifier 'M2'
      */
     public function step2($Ahex, $M1hex)
     {
-        if($this->step != 1 ) throw new \Exception("Possible dictionary attack refusing to collaborate.");
+        if ($this->step != 1)
+            throw new \Exception("Possible dictionary attack refusing to collaborate.");
+        
         $Ahex = $this->stripLeadingZeros($Ahex);
         $A = new BigInteger($Ahex, 16);
         
@@ -198,7 +215,7 @@ class ThinbusSrp
         
         $M = $this->stripLeadingZeros($this->hash($Ahex . $this->Bhex . $Shex));
         
-        if( $M1hex != $M) {
+        if ($M1hex != $M) {
             // echo "error s c M:".$M1hex."\n";
             // echo "error s s M:".$M."\n";
             throw new \Exception('Client M1 does not match Server M1.');
@@ -220,14 +237,16 @@ class ThinbusSrp
     }
 
     /**
+     *
      * @return string The user id 'I'.
      */
     public function getUserID()
     {
         return $this->userID;
     }
-    
+
     /**
+     *
      * @return string 'K=H(S)' a strong shared session key.
      */
     public function getSessionKey()
@@ -239,48 +258,4 @@ class ThinbusSrp
     {
         return strtolower(hash($this->H, $x));
     }
-
-    protected function createRandomBigIntegerInRange() {
-        return new BigInteger($this->getSecureRandom(), 16);
-    }
-    
-    protected function getSecureRandom($bits = 64)
-    {
-        $str = secure_random_bytes($bits);
-        return $this->binary2hex($str);
-    }
-
-    protected function binary2hex($string)
-    {
-        $chars = array(
-            '0',
-            '1',
-            '2',
-            '3',
-            '4',
-            '5',
-            '6',
-            '7',
-            '8',
-            '9',
-            'a',
-            'b',
-            'c',
-            'd',
-            'e',
-            'f'
-        );
-        
-        $length = strlen($string);
-        
-        $result = '';
-        for ($i = 0; $i < $length; $i ++) {
-            $b = ord($string[$i]);
-            $result = $result . $chars[($b & 0xF0) >> 4];
-            $result = $result . $chars[$b & 0x0F];
-        }
-        
-        return $result;
-    }
-
 }

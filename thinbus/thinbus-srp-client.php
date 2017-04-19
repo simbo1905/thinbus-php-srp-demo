@@ -1,6 +1,7 @@
 <?php
 require_once 'srand.php';
 require_once 'BigInteger.php';
+require_once 'thinbus-srp-common.php';
 
 /*
  * Copyright 2017 Keith Wagner
@@ -25,7 +26,7 @@ require_once 'BigInteger.php';
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-class ThinbusSrpClient
+class ThinbusSrpClient extends ThinbusSrpCommon
 {
 
     protected $N_base10 = "21766174458617435773191008891802753781907668374255538511144643224689886235383840957210909013086056401571399717235807266581649606472148410291413364152197364477180887395655483738115072677402235101762521901569820740293149529620419333266262073471054548368736039519702486226506248861060256971802984953561121442680157668000761429988222457090413873973970171927093992114751765168063614761119615476233422096442783117971236371647333871414335895773474667308967050807005509320424799678417036867928316761272274230314067548291133582479583061439577559347101961771406173684378522703483495337037655006751328447510550299250924469288819";
@@ -72,22 +73,6 @@ class ThinbusSrpClient
 
     protected $H;
 
-    protected function stripLeadingZeros($str)
-    {
-        return ltrim($str, '0');
-    }
-
-    protected function createRandomBigIntegerInRange()
-    {
-        return new BigInteger($this->getSecureRandom(), 16);
-    }
-
-    protected function getSecureRandom($bits = 64)
-    {
-        $str = secure_random_bytes($bits);
-        return $this->binary2hex($str);
-    }
-
     /**
      *
      * @param string $N_base10str
@@ -118,7 +103,7 @@ class ThinbusSrpClient
         $this->userID = $userId;
         $this->password = $password;
         while (! $this->A || $this->A->powMod(new BigInteger(1), $this->N) === 0) {
-            $this->a = $this->createRandomBigIntegerInRange();
+            $this->a = $this->createRandomBigIntegerInRange($this->N);
             // echo "a:".$this->a."\n";
             $this->A = $this->g->powMod($this->a, $this->N);
         }
@@ -164,7 +149,7 @@ class ThinbusSrpClient
 
     function generateRandomSalt()
     {
-        $ranum = $this->createRandomBigIntegerInRange();
+        $ranum = $this->createRandomBigIntegerInRange($this->N);
         $salt = $this->hash((time()) . ":" . $ranum);
         return $salt;
     }
@@ -323,38 +308,6 @@ class ThinbusSrpClient
     public function getUserID()
     {
         return $this->userID;
-    }
-
-    protected function binary2hex($string)
-    {
-        $chars = array(
-            '0',
-            '1',
-            '2',
-            '3',
-            '4',
-            '5',
-            '6',
-            '7',
-            '8',
-            '9',
-            'a',
-            'b',
-            'c',
-            'd',
-            'e',
-            'f'
-        );
-        
-        $length = strlen($string);
-        
-        $result = '';
-        for ($i = 0; $i < $length; $i ++) {
-            $b = ord($string[$i]);
-            $result = $result . $chars[($b & 0xF0) >> 4];
-            $result = $result . $chars[$b & 0x0F];
-        }
-        return $result;
     }
 }
 ?>
