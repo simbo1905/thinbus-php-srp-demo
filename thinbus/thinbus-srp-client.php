@@ -35,8 +35,6 @@ class ThinbusSrpClient extends ThinbusSrpCommon
 
     protected $k_base16 = "5b9e8ef059c6b32ea59fc1d322d37f04aa30bae5aa9003b8321e21ddb04e300";
 
-    protected $userID;
-
     protected $params;
 
     protected $password;
@@ -50,8 +48,6 @@ class ThinbusSrpClient extends ThinbusSrpCommon
     protected $M;
 
     protected $K;
-
-    protected $salt;
 
     protected $HAMK;
 
@@ -130,6 +126,8 @@ class ThinbusSrpClient extends ThinbusSrpCommon
         if(trim($salt) === '' || trim($identify) === '' || trim($password) === '') {
             throw new \Exception('one or more parameters provided is blank when checked with trim($x) === \'\'.');
         }
+        
+        $this->salt = $salt;
         
         $hash1 = $this->hash($identify . ":" . $password);
         

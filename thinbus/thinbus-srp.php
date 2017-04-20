@@ -82,12 +82,6 @@ class ThinbusSrp extends ThinbusSrpCommon
 
     /**
      *
-     * @var string The user identity 'I'.
-     */
-    protected $userID;
-
-    /**
-     *
      * @var string A hex encoded secure randome number.
      */
     protected $b = null;
@@ -155,6 +149,7 @@ class ThinbusSrp extends ThinbusSrpCommon
             throw new \Exception("Possible dictionary attack refusing to collaborate");
         $this->v = new BigInteger($v_base16str, 16);
         $this->userID = $userID;
+        $this->salt = $salt_base16str;
         
         while (! $this->B || $this->B->powMod(new BigInteger(1), $this->N) === 0) {
             $this->b = $this->createRandomBigIntegerInRange($this->N);

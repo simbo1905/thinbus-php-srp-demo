@@ -15,7 +15,7 @@ If not then PHP installs come with a [built in webserver](http://php.net/manual/
 
 ```sh
 # Run this in the same folder as the top level demo files
-php -S localhost:8000
+	php -S localhost:8000
 ```
 
 This lets you try this demo with your PHP version and use browser developer tools to inspect the AJAX traffic. Note the built in webserver is very slow compared to a real PHP server install. 
