@@ -2,7 +2,14 @@
 
 /**
  * NOTE THIS FILE DOES NOT RUN ON A SERVER
- * It is used to test the code in an IDE before releasing.
+ * 
+ * To run these unit tests on the commandline of your laptop: 
+ * 
+ *    # download the php phar if you don't have it installed globally and check it can print out its version
+ *    wget https://phar.phpunit.de/phpunit.phar
+ *    php phpunit.phar --version
+ *    # run the Thinbus unit tests which tests the cryptography
+ *    php phpunit.phar ThibusTest.php
  */
 
 require_once 'thinbus/thinbus-srp.php';
