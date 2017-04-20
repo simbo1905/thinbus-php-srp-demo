@@ -29,7 +29,9 @@ page in a traditional (not AJAX) way to force the cleanup of any traces of the p
 The core PHP library files are in the `thinbus` folder:
 
 * `thinbus/thinbus-srp-config.php` SRP configuration global variables. Must be included before the thinbus library code. Must match the values configured in the JavaScript. 
-* `thinbus/thinbus-srp.php` PHP port of the Thinbus Java code based on code by [Ruslan Zavacky](https://github.com/RuslanZavacky/srp-6a-demo).
+* `thinbus/thinbus-srp.php` PHP port of the Thinbus Java SRP server code based on code by [Ruslan Zavacky](https://github.com/RuslanZavacky/srp-6a-demo).
+* `thinbus/thinbus-srp-client.php` PHP SRP client code contributed by Keith Wagner.
+* `thinbus/thinbus-srp-common.php` common functions used by the client and server. 
 * `thinbus/BigInteger.php` pear.php.net [BigInteger math package](http://pear.php.net/package/BigInteger).
 * `thinbus/srand.php` strong random numbers from [George Argyros](https://github.com/GeorgeArgyros/Secure-random-bytes-in-PHP) avoiding known buggy versions of random libraries.
 * `thinbus/thinbus-srp-client.php` PHP client code contributed by Keith Wagner.     
@@ -60,9 +62,9 @@ HTML, AJAX and database access logic. SRP is independent of those such things an
 is that:
 
 * Every users has a password verifier and a unique salt that you store in your database. This implementation uses the [RFC2945](https://www.ietf.org/rfc/rfc2945.txt) approach of hashing the username into the password verifier. This means that if your application lets a user change their username then they will be locked out unless you generate and store a fresh password verifier.  
-* At every login attempt the browser first makes an AJAX call to get a one-time random challange and the user salt from the server. The browser then uses that to compute a one-time proof-of-passowrd and then immediately posts the proof-of-password to the server. The server checks the proof-of-password using both the client verifier and the one-time challenge. This means the server has to hold the thinbus object that generated the challenge only long enough to verify the corresponding proof-of-password. 
+* At every login attempt the browser first makes an AJAX call to get a one-time random challenge and the user salt from the server. The browser then uses that to compute a one-time proof-of-password and then immediately posts the proof-of-password to the server. The server checks the proof-of-password using both the client verifier and the one-time challenge. This means the server has to hold the thinbus object that generated the challenge only long enough to verify the corresponding proof-of-password. 
 
-The following diagram shows shows what you need to know: 
+The following diagram shows what you need to know: 
 
 ![Thinbus SRP Login Diagram](http://simonmassey.bitbucket.io/thinbus/login.png "Thinbus SRP Login Diagram")
 
