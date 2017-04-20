@@ -83,6 +83,8 @@ core Thinbus library at `thinbus\*.php`.
 
 Please read the recommendations in the [main thinbus documentation](https://bitbucket.org/simon_massey/thinbus-srp-js) and take additional steps such as using HTTPS and encrypting the password verifier in the database which are not shown in this demo. 
 
+*Note:* It is recommended that you install the PHP [Open SSL extention](http://php.net/manual/en/book.openssl.php) which the random number generator in `srand.php` prefers to use. If it cannot find that extension then it's second choice is the PHP [Mcrypt Extension](http://php.net/manual/en/book.mcrypt.php). If it cannot find that it else if it is running on Windows it uses its own random number generating approach. 
+
 ## Troubleshooting
 
 If you are having problems first check that the demo code runs locally on your worksation using the exact same version of PHP as you run on your server: 
