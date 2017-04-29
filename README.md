@@ -1,8 +1,11 @@
-# Thinbus SRP PHP Demo
+# Thinbus SRP PHP
 
-Copyright (c) Simon Massey, 2015-2016
+Copyright (c) Simon Massey, 2015-2017
 
-Demo of Secure Remote Password (SRP-6a) protocol implementation of a browser authenticating to a PHP server using the [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js) Javascript library. 
+Thinbus SRP PHP is an implementation of the SRP-6a Secure Remote Password  protocol. It is compatible with [Thinbus](https://bitbucket.org/simon_massey/thinbus-srp-js) a JavaScript SRP implementation. This allows you to generate a verifier for a temporary password in PHP and have users login to a PHP server using a browser.  
+
+This repository also includes a slightly contrived demo of a browser running the [Thinbus Javascript library](https://bitbucket.org/simon_massey/thinbus-srp-js) authenticating to a PHP server. 
+
 **Note** Please read the [Thinbus documentation page](https://bitbucket.org/simon_massey/thinbus-srp-js) before attempting to use this demo code. 
 
 ## Trying The Demo
@@ -12,12 +15,10 @@ If not then PHP installs come with a [built in webserver](http://php.net/manual/
 
 ```sh
 # Run this in the same folder as the top level demo files
-php -S localhost:8000
+	php -S localhost:8000
 ```
 
 This lets you try this demo with your PHP version and use browser developer tools to inspect the AJAX traffic. Note the built in webserver is very slow compared to a real PHP server install. 
-
-There is also an alternative [thinbus-php-demo2 by Benny Nissen](https://bitbucket.org/beastybeast/thinbus-php-demo2/overview). 
 
 ## Using In Your Application
 
@@ -28,9 +29,12 @@ page in a traditional (not AJAX) way to force the cleanup of any traces of the p
 The core PHP library files are in the `thinbus` folder:
 
 * `thinbus/thinbus-srp-config.php` SRP configuration global variables. Must be included before the thinbus library code. Must match the values configured in the JavaScript. 
-* `thinbus/thinbus-srp.php` PHP port of the Thinbus Java code based on code by [Ruslan Zavacky](https://github.com/RuslanZavacky/srp-6a-demo).
+* `thinbus/thinbus-srp.php` PHP port of the Thinbus Java SRP server code based on code by [Ruslan Zavacky](https://github.com/RuslanZavacky/srp-6a-demo).
+* `thinbus/thinbus-srp-client.php` PHP SRP client code contributed by Keith Wagner.
+* `thinbus/thinbus-srp-common.php` common functions used by the client and server. 
 * `thinbus/BigInteger.php` pear.php.net [BigInteger math package](http://pear.php.net/package/BigInteger).
-* `thinbus/srand.php` strong random numbers from [George Argyros](https://github.com/GeorgeArgyros/Secure-random-bytes-in-PHP) avoiding known buggy versions of random libraries. 
+* `thinbus/srand.php` strong random numbers from [George Argyros](https://github.com/GeorgeArgyros/Secure-random-bytes-in-PHP) avoiding known buggy versions of random libraries.
+* `thinbus/thinbus-srp-client.php` PHP client code contributed by Keith Wagner.     
 
 The core Thinbus JavaScript library files are in the `resources/thinbus` folder: 
 
@@ -58,11 +62,11 @@ HTML, AJAX and database access logic. SRP is independent of those such things an
 is that:
 
 * Every users has a password verifier and a unique salt that you store in your database. This implementation uses the [RFC2945](https://www.ietf.org/rfc/rfc2945.txt) approach of hashing the username into the password verifier. This means that if your application lets a user change their username then they will be locked out unless you generate and store a fresh password verifier.  
-* At every login attempt the browser first makes an AJAX call to get a one-time random challange and the user salt from the server. The browser then uses that to compute a one-time proof-of-passowrd and then immediately posts the proof-of-password to the server. The server checks the proof-of-password using both the client verifier and the one-time challenge. This means the server has to hold the thinbus object that generated the challenge only long enough to verify the corresponding proof-of-password. 
+* At every login attempt the browser first makes an AJAX call to get a one-time random challenge and the user salt from the server. The browser then uses that to compute a one-time proof-of-password and then immediately posts the proof-of-password to the server. The server checks the proof-of-password using both the client verifier and the one-time challenge. This means the server has to hold the thinbus object that generated the challenge only long enough to verify the corresponding proof-of-password. 
 
-The following diagram shows shows what you need to know: 
+The following diagram shows what you need to know: 
 
-![Thinbus SRP Login Diagram](http://simon_massey.bitbucket.org/thinbus/login.png "Thinbus SRP Login Diagram")
+![Thinbus SRP Login Diagram](http://simonmassey.bitbucket.io/thinbus/login.png "Thinbus SRP Login Diagram")
 
 The demo saves the use salt and verifier in an [SQLite](http://php.net/manual/en/book.sqlite.php) flat file database at `/tmp/srp_db.txt`. The location is configured in `require.php`. 
 The demo application comprises of the following top level php demo files that you probably *don't* want to use in your own application: 
@@ -78,6 +82,8 @@ which pages users can or cannot access. Modifying the demo files to support your
 core Thinbus library at `thinbus\*.php`. 
 
 Please read the recommendations in the [main thinbus documentation](https://bitbucket.org/simon_massey/thinbus-srp-js) and take additional steps such as using HTTPS and encrypting the password verifier in the database which are not shown in this demo. 
+
+**Note:** It is *strongly* *recommended* that you install the PHP [Open SSL extention](http://php.net/manual/en/book.openssl.php) which the random number generator in `srand.php` prefers to use. If it cannot find that extension then it's second choice is the PHP [Mcrypt Extension](http://php.net/manual/en/book.mcrypt.php). If it cannot find that or if it is running on Windows it uses it's own random number generating approach by [George Argyros](https://github.com/GeorgeArgyros/Secure-random-bytes-in-PHP). 
 
 ## Troubleshooting
 
@@ -111,10 +117,8 @@ Your webserver might not have permission to write to `/tmp/srp_db.txt` see the d
 If the demo works locally but doesnt work on your main server then I suggest you use the browser developer tools to compare the network traffic 
 (particularly the AJAX calls) that happen when running locally verses running on your main server to see if the server traffic indicates a server configuration problem. 
 
-If you got this far and could not find any problems running the demo code locally nor on your server then I assume you are having problems using the thinbus library 
-code in your own application. Deploy the demo app onto the same server as your own app and use browser developer tools to inspect the network traffic (particularly the AJAX calls)
-to compare what the traffic looks like between the working demo app and your own app. If the browser traffic seems okay double check that all the necessary config and database data 
-is being both saved and loaded correctly.
+If you got this far and could not find any problems running the demo code locally nor on your server then I assume you are having problems using the thinbus library code in your own application. Deploy the demo app onto the same server as your own app and use browser developer tools to inspect the network traffic (particularly the AJAX calls)
+to compare what the traffic looks like between the working demo app and your own app. If the browser traffic seems okay double check that all the necessary config and database data is being both saved and loaded correctly.
 
 ## License
 
