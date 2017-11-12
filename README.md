@@ -90,10 +90,10 @@ If you are having problems first check that the demo code runs locally on your w
 
 ```sh
 # download the php phar if you don't have it installed globally and check it can print out its version
-wget https://phar.phpunit.de/phpunit.phar
-php phpunit.phar --version
+wget https://phar.phpunit.de/phpunit-5.7.phar
+php phpunit-5.7.phar --version
 # run the Thinbus unit tests which tests the cryptography
-php phpunit.phar ThibusTest.php
+php phpunit-5.7.phar ThibusTest.php
 ```
 
 If all test pass should output a final line such as `OK (5 tests, 204 assertions)`. If not raise an issue with the exact PHP version and the output of `phpinfo();`
