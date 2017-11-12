@@ -10,15 +10,14 @@ This repository also includes a slightly contrived demo of a browser running the
 
 ## Trying The Demo
 
-This demo code may or may not be running on a redhat [demo server](http://thinbusphp-n00p.rhcloud.com/). 
-If not then PHP installs come with a [built in webserver](http://php.net/manual/en/features.commandline.webserver.php) for local testing purposes:  
+PHP comes with a very slow [built in webserver](http://php.net/manual/en/features.commandline.webserver.php) that can be used for local testing purposes:  
 
 ```sh
 # Run this in the same folder as the top level demo files
 	php -S localhost:8000
 ```
 
-This lets you try this demo with your PHP version and use browser developer tools to inspect the AJAX traffic. Note the built in webserver is very slow compared to a real PHP server install. 
+This lets you try this demo with your PHP version and use browser developer tools to inspect the AJAX traffic. Note that the built in webserver is very slow compared to a real PHP server install. 
 
 ## Using In Your Application
 
@@ -91,10 +90,10 @@ If you are having problems first check that the demo code runs locally on your w
 
 ```sh
 # download the php phar if you don't have it installed globally and check it can print out its version
-wget https://phar.phpunit.de/phpunit.phar
-php phpunit.phar --version
+wget https://phar.phpunit.de/phpunit-5.7.phar
+php phpunit-5.7.phar --version
 # run the Thinbus unit tests which tests the cryptography
-php phpunit.phar ThibusTest.php
+php phpunit-5.7.phar ThibusTest.php
 ```
 
 If all test pass should output a final line such as `OK (5 tests, 204 assertions)`. If not raise an issue with the exact PHP version and the output of `phpinfo();`
@@ -123,7 +122,7 @@ to compare what the traffic looks like between the working demo app and your own
 ## License
 
 ```
-   Copyright 2015 Simon Massey
+   Copyright 2015-2017 Simon Massey
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
