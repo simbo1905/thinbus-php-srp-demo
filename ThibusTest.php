@@ -1,22 +1,11 @@
 <?php
-
-/**
- * NOTE THIS FILE DOES NOT RUN ON A SERVER
- * 
- * To run these unit tests on the commandline of your laptop: 
- * 
- *    # download the php phar if you don't have it installed globally and check it can print out its version
- *    wget https://phar.phpunit.de/phpunit.phar
- *    php phpunit.phar --version
- *    # run the Thinbus unit tests which tests the cryptography
- *    php phpunit.phar ThibusTest.php
- */
-
 require_once 'thinbus/thinbus-srp.php';
 
 require_once 'thinbus/BigInteger.php';
 
 require_once 'thinbus/thinbus-srp-client.php';
+
+use PHPUnit\Framework\TestCase;
 
 /**
  * This subclass lets use override the random 'b' value and constant 'k' value with those seen in a debugger running the js+java thinbus tests.
@@ -57,10 +46,7 @@ class NotRandomSrpClient extends ThinbusSrpClient
     
 }
 
-/**
- * Tests authentication using values from thinbus js+java tests.
- */
-class ThibusTest extends PHPUnit_Framework_TestCase
+class ThibusTest extends TestCase
 {
 
     private $Srp;
@@ -96,14 +82,6 @@ class ThibusTest extends PHPUnit_Framework_TestCase
         parent::tearDown();
     }
 
-    /**
-     * Constructs the test case.
-     */
-    public function __construct()
-    {
-        // TODO Auto-generated constructor
-    }
-    
     /**
      * There was a bug in the old version of the BigInteger library which gave negative $S numbers for the server math.   
      */
@@ -386,6 +364,9 @@ class ThibusTest extends PHPUnit_Framework_TestCase
         $M1 = $credentials[1];
         $M2 = $this->Srp->step2($A, $M1);
         $this->SrpClient->verifyConfirmation($M2);
+        // noop assert else phpunit complains about this test. thinbus-php will have thrown exception if authenitication didn't work.
+        $this->assertEquals(0, 0);
+
     }
     
     public function testWithJavaValues() {
@@ -471,3 +452,4 @@ class ThibusTest extends PHPUnit_Framework_TestCase
         }
     }
 }
+?>
