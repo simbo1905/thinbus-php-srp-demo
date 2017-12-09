@@ -1,6 +1,6 @@
 /*
  * Thinbus Javascript Secure Remote Password (SRP)
- * Version  1.4.2
+ * Version  1.5.2
  * Copyright 2014-2015 Simon Massey
  * http://www.apache.org/licenses/LICENSE-2.0
  * ----------------------------------------------------------------------
