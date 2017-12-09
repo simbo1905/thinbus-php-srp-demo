@@ -6,3 +6,4 @@ srp_db.txt
 .project
 phpunit.phar
 phpunit-5.7.phar
+phpinfo.php
