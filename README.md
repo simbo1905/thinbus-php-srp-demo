@@ -14,7 +14,7 @@ PHP comes with a very slow [built in webserver](http://php.net/manual/en/feature
 
 ```sh
 # Run this in the same folder as the top level demo files
-	php -S localhost:8000
+php -S localhost:8000
 ```
 
 This lets you try this demo with your PHP version and use browser developer tools to inspect the AJAX traffic. Note that the built in webserver is very slow compared to a real PHP server install. 
@@ -96,7 +96,7 @@ php phpunit.phar ThibusTest.php
 
 If all test pass should output a final line such as `OK (xx tests, yyy assertions)`. If not raise an issue with the exact PHP version and the output of `phpinfo();`
 
-Next run the local [built in webserver](http://php.net/manual/en/features.commandline.webserver.php) on your workstation and try to register then sign-in: 
+Next run the local [built in webserver](http://php.net/manual/en/features.commandline.webserver.php) on your workstation and try to register then authenticate (note that successfuli authentication only writes "Success" in a green banner on the login page): 
 
 ```sh
 # Run this in the same folder as the top level demo files 
