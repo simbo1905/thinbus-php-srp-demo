@@ -1,3 +1,8 @@
+
+[![Latest Stable Version](https://poser.pugx.org/phpunit/phpunit/version)](https://packagist.org/packages/simon_massey/thinbus-php-srp)
+
+[![License](https://poser.pugx.org/phpunit/phpunit/license)](https://packagist.org/packages/simon_massey/thinbus-php-srp)
+
 # Thinbus SRP PHP
 
 Copyright (c) Simon Massey, 2015-2017
