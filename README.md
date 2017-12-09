@@ -60,7 +60,7 @@ HTML, AJAX and database access logic. SRP is independent of those such things an
 is that:
 
 * Every users has a password verifier and a unique salt that you store in your database. This implementation uses the [RFC2945](https://www.ietf.org/rfc/rfc2945.txt) approach of hashing the username into the password verifier. This means that if your application lets a user change their username then they will be locked out unless you generate and store a fresh password verifier.  
-* At every login attempt the browser first makes an AJAX call to get a one-time random challenge and the user salt from the server. The browser then uses that to compute a one-time proof-of-password and then immediately posts the proof-of-password to the server. The server checks the proof-of-password using both the client verifier and the one-time challenge. This means the server has to hold the thinbus object that generated the challenge only long enough to verify the corresponding proof-of-password. 
+* At every login attempt the browser first makes an AJAX call to get a one-time random challenge and the user salt from the server. The browser then uses that to compute a one-time proof-of-password and then immediately posts the proof-of-password to the server. The server checks the proof-of-password for the one-time challenge using the information stored in the user database. This means the server has to hold the thinbus object that generated the challenge for a short period (either your favourite cache or in your main database). 
 
 The following diagram shows what you need to know: 
 
