@@ -72,20 +72,18 @@ The demo application comprises of the following top level php demo files that yo
 * `require.php` a fragment to pull in the SRP constants, Thinbus library, RedBean library. It also initialises the SQLite database. 
 * `rb.php` [RedBeanPHP](http://redbeanphp.com) "an easy-to-use, on-the-fly ORM for PHP" used to abstract the database solely for the convenience of this demo. You are not expected to use this library code in your own application.   
 * `register.php` accepts a POST with the user email, salt and verifier and saves them into the SQLite database. It is expected you have your own logic for registering users and you are going to modify that to save a salt and verifier for each user rather than use this code.
-* `challenge.php` accepts a POST with the user email, looks up the salt and verifier in the SQLite database, and uses Thinbus core library code to generate a one-time server challenge. It saves the Thinbus object in the SQLite database in an 'authentication' table so that it can look up everything needed to verify the client password proof based on the one-time challenge. It is expected that you modify this code to use your own database access library code.  
-* `login.php` verifies the user password proof. Note that the server needs to remember the one-time challenge that it gave the client to check the one-time password proof. It therefore looks up the object that created the one-time challenge in the SQLite database. It is expected that you modify this code to use your own database access library code. This logic uses the core Thinbus library code to check the password proof which will throw a PHP exception if authentication fails. 
+* `challenge.php` accepts a POST with the user email, looks up the salt and verifier in the SQLite database, and uses Thinbus core library code to generate a one-time server challenge. It saves the Thinbus object in the SQLite database in an 'authentication' table so that it can look up everything needed to verify the client password proof based on the one-time challenge. It is expected that you don't use my SQLLite demo code but supply your own code to save things in your main database using your own code. 
+* `login.php` verifies the user password proof. Note that the server needs to remember the one-time challenge that it gave the client to check the one-time password proof. It therefore looks up the object that created the one-time challenge in the SQLite database. It is expected that you don't use my SQLLite demo code but supply your own code to save things in your main database using your own code. This logic uses the core Thinbus library code to check the password proof which will throw a PHP exception if authentication fails. 
 
-It is expected that you create your own code for loading and saving data to a real database. It is expected that you use your own code for handling authorisation of 
-which pages users can or cannot access. Modifying the demo files to support your application may be harder than just modifying your current application to simply use the 
-core Thinbus library at `thinbus\*.php`. 
+It is expected that you create your own code for loading and saving data to a real database. Do not use my SQLLite or RedBean code. Only use the PHP files at `thinbus\*.php` folder of this repo.It is expected that you use your own code for handling authorisation of which pages users can or cannot access. Trying to modifying the demo files to support your application may be harder than just modifying your current application to simply use the core Thinbus library at `thinbus\*.php`. 
 
 Please read the recommendations in the [main thinbus documentation](https://bitbucket.org/simon_massey/thinbus-srp-js) and take additional steps such as using HTTPS and encrypting the password verifier in the database which are not shown in this demo. 
 
-**Note:** It is *strongly* *recommended* that you install the PHP [Open SSL extention](http://php.net/manual/en/book.openssl.php) which the random number generator in `srand.php` prefers to use. If it cannot find that extension then it's second choice is the PHP [Mcrypt Extension](http://php.net/manual/en/book.mcrypt.php). If it cannot find that or if it is running on Windows it uses it's own random number generating approach by [George Argyros](https://github.com/GeorgeArgyros/Secure-random-bytes-in-PHP). 
+**Note:** It is *strongly* *recommended* that you install the PHP [Open SSL extention](http://php.net/manual/en/book.openssl.php) which the random number generator in `srand.php` will try to use. If it cannot find that extension then it's second choice is the PHP [Mcrypt Extension](http://php.net/manual/en/book.mcrypt.php). If it cannot find that or if it is running on Windows it uses it's own random number generating approach by [George Argyros](https://github.com/GeorgeArgyros/Secure-random-bytes-in-PHP). 
 
 ## Troubleshooting
 
-If you are having problems first check that the demo code runs locally on your worksation using the exact same version of PHP as you run on your server: 
+If you are having problems first check that the PHP unit code runs locally on your worksation using the exact same version of PHP as you run on your server: 
 
 ```sh
 # download the php phar if you don't have it installed globally and check it can print out its version
@@ -105,7 +103,7 @@ Next run the local [built in webserver](http://php.net/manual/en/features.comman
 php -S localhost:8000
 ```
 
-If that doesn't work try a couple of different browsers (chrome, firefox, edge/safari) to check if it is a browser JavaScript compatibility problem. 
+If that doesn't work try a couple of different browsers (chrome, firefox, edge/safari) to check if it is a browser JavaScript compatibility problem. Use your favourite browsers developer view to look at the network traffic to see if it corresponds to the diagrams above. Supply the details of the browser traffic in any issue that you raise. 
 Then raise an issue naming all the browser versions you tested with and the results. 
 Bonus marks for using the browser developer tools to capture the network traffic (particularly the AJAX calls) to see if the server put any error messages 
 into the traffic which may break the demo code. Further bonus marks for including any browser JS console output and any PHP scripting engine logs which may 
@@ -114,10 +112,9 @@ indicate what the problem might be.
 If you got this far and couldn't find any problems with the demo code running locally then next try deploying the demo code to your main webserver. 
 Your webserver might not have permission to write to `/tmp/srp_db.txt` see the documentation above about where that is hardcoded in the demo to change it. 
 If the demo works locally but doesnt work on your main server then I suggest you use the browser developer tools to compare the network traffic 
-(particularly the AJAX calls) that happen when running locally verses running on your main server to see if the server traffic indicates a server configuration problem. 
+(particularly the AJAX calls) that happen when running locally verses running on your main server to see if the server traffic indicates a server configuration problem. Typically the AJAX resonpse from the server pukes up a warning message that the browser cannot parse. Try to fix the PHP warning message before raising an issue as its normally something missing from a custom PHP install. 
 
-If you got this far and could not find any problems running the demo code locally nor on your server then I assume you are having problems using the thinbus library code in your own application. Deploy the demo app onto the same server as your own app and use browser developer tools to inspect the network traffic (particularly the AJAX calls)
-to compare what the traffic looks like between the working demo app and your own app. If the browser traffic seems okay double check that all the necessary config and database data is being both saved and loaded correctly.
+If the PHP code is running very slow on your server then its likely that your server is missing some native libraries that PHP normally uses. When this is the case the PHP engine runs much slower than the webbrowser. This is not something that I can debug for you so please don't raise an issue. Instead ask a question on stackoverflow or another stackexchange site about your OS and PHP version asking whether there are "known issues" of code running slowly that can be fixed by changing settings or installing native libraries. (The typical one is to install openssl and the php library which uses it.)
 
 ## License
 
