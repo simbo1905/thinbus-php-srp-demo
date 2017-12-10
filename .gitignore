@@ -1,0 +1,14 @@
+/deployment.properties
+/deployment.xml
+.buildpath
+.settings
+srp_db.txt
+.project
+phpunit.phar
+phpunit-5.7.phar
+phpinfo.php
+.idea/
+.vscode/
+composer.lock
+issue8.txt
+vendor/
