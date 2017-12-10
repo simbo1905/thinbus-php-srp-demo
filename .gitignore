@@ -9,6 +9,5 @@ phpunit-5.7.phar
 phpinfo.php
 .idea/
 .vscode/
-composer.lock
 issue8.txt
 vendor/
