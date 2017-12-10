@@ -13,13 +13,17 @@ $root = dirname(dirname(__FILE__));
 /**
  * This is RedBean just to give a simple database using SqlLite.
  * There is no requirement to use this code I would expect you
- * to use your own existing database accesss logic.
+ * to use your own existing database accesss logic. If you are testing
+ * the demo app on a servder and get permission denied to /tmp then 
+ * edit the path to be some other folder writeable to the webserver. 
  */
 require 'rb.php';
 R::setup('sqlite:/tmp/srp_db.txt');
 
 /**
  * These two imports are the specfic config paramters and the Thinbus library.
+ * The are installed into the `vendor` folder when you run `composer update` to 
+ * downlaod all the dependencies named in the `composer.json` file. 
  */
-require 'thinbus/thinbus-srp-config.php';
-require 'thinbus/thinbus-srp.php';
+require './vendor/simon_massey/thinbus-php-srp/thinbus/thinbus-srp-config.php';
+require './vendor/simon_massey/thinbus-php-srp/thinbus/thinbus-srp.php';

@@ -3,9 +3,15 @@
 <head>
 <title>Signup</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<!-- Include Thinbus SRP safe prime config first then minimised Thinbus SRP JS crypo library -->
-<script src="./resources/thinbus/rfc5054-safe-prime-config.js"></script>
-<script src="./resources/thinbus/thinbus-srp6a-sha256-versioned.js"></script>
+
+<!-- 
+	Include Thinbus SRP safe prime config first then minimised Thinbus SRP JS crypo library 
+	These files are only created when you run `composer update` to update the PHP dependencies 
+	named in `composer.json`
+-->
+<script src="./vendor/simon_massey/thinbus-php-srp/resources/thinbus/rfc5054-safe-prime-config.js"></script>
+<script src="./vendor/simon_massey/thinbus-php-srp/resources/thinbus/thinbus-srp6a-sha256-versioned.js"></script>
+
 
 <!-- The rest of the includes are demo app only and are not part of the thinbus library -->	
 <link href="./resources/css/bootstrap.min.css" rel="stylesheet"
