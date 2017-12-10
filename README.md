@@ -12,6 +12,7 @@ This demo lets you test the library with your PHP version and use browser develo
 
 ```sh
 # use the PHP composer to pull down the thinbus libraries: see package.json for how the version of thinbus PHP is specified
+# see https://getcomposer.org/doc/01-basic-usage.md
 composer update
 # run all the unit tests to be sure that you have installed a version of the library that works with your PHP intall
 ./vendor/phpunit/phpunit/phpunit ./vendor/simon_massey/thinbus-php-srp/ThinbusTest.php
