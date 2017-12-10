@@ -21,6 +21,12 @@ require 'rb.php';
 R::setup('sqlite:/tmp/srp_db.txt');
 
 /**
+ * These are the dependencies of Thinbus which are installed with `composer update`.
+*/
+require_once 'vendor/pear/math_biginteger/Math/BigInteger.php';
+require_once 'vendor/paragonie/random_compat/lib/random.php';
+
+/**
  * These two imports are the specfic config paramters and the Thinbus library.
  * The are installed into the `vendor` folder when you run `composer update` to 
  * downlaod all the dependencies named in the `composer.json` file. 
