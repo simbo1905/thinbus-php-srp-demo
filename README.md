@@ -2,7 +2,7 @@
 
 Copyright (c) Simon Massey, 2015-2017
 
-This is a demo of the [Thinbus SRP PHP](https://packagist.org/packages/simon_massey/thinbus-php-srp) implementation of the SRP-6a Secure Remote Password  protocol. It demonstrates generating a verifier for a password in PHP and have users login to a PHP server using a browser. 
+This is a demo of the [Thinbus SRP PHP](https://packagist.org/packages/simon_massey/thinbus-php-srp) implementation of the SRP-6a Secure Remote Password  protocol. It demonstrates generating a password verifier at the browser which is saved at the server to use to authenticate the user. 
 
 **Note** Please read the [Thinbus documentation page](https://bitbucket.org/simon_massey/thinbus-srp-js) before attempting to use this demo code which is the project where the JavaScript came from which outlines some best practices. 
 
