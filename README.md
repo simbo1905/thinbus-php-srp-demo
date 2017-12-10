@@ -1,4 +1,4 @@
-# Thinbus SRP PHP
+# Thinbus SRP PHP Demo
 
 Copyright (c) Simon Massey, 2015-2017
 
