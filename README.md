@@ -24,13 +24,10 @@ Note the [built in webserver](http://php.net/manual/en/features.commandline.webs
 
 ## The Demo Application
 
-This work is based on [Ruslan Zazvacky's SRP PHP demo](https://github.com/RuslanZavacky/srp-6a-demo) and registers users into a SQLite database. 
-It is very artificial as it only uses AJAX to confirm that authentication is successful. With a real application post authentication the browser should load a main application 
-page in a traditional (not AJAX) way to force the cleanup of any traces of the password as recommended on the [Thinbus page](https://bitbucket.org/simon_massey/thinbus-srp-js). 
-    
+This work is based on [Ruslan Zazvacky's SRP PHP demo](https://github.com/RuslanZavacky/srp-6a-demo) and registers users into a SQLite database. You shouldn't be using a SQLite database you should use the main database of your main application (and possibly a distributed cache to store the temporary state created during authentication if you don't want to put that into your main database).
+This demo is very artificial as it only uses AJAX to confirm that authentication is successful. With a real application after authentication the browser should load a main application page in a traditional (not AJAX) way to force the cleanup of any traces of the password as recommended on the [Thinbus page](https://bitbucket.org/simon_massey/thinbus-srp-js). The demo also doesn't cover authorisation (which uses can see what, which pages are public, which pages are not). 
 
-The demo saves the use salt and verifier in an [SQLite](http://php.net/manual/en/book.sqlite.php) flat file database at `/tmp/srp_db.txt`. The location is configured in `require.php`. 
-The demo application comprises of the following top level php demo files that you probably *don't* want to use in your own application: 
+The demo saves the use salt and verifier in an [SQLite](http://php.net/manual/en/book.sqlite.php) flat file database at `/tmp/srp_db.txt`. The location is configured in `require.php` which also shows where composer installs the Thinbus PHP library code. The demo application comprises of the following top level php demo files that you probably *don't* want to use in your own application: 
 
 * `require.php` a fragment to pull in the SRP constants, Thinbus library, RedBean library. It also initialises the SQLite database. 
 * `rb.php` [RedBeanPHP](http://redbeanphp.com) "an easy-to-use, on-the-fly ORM for PHP" used to abstract the database solely for the convenience of this demo. You are not expected to use this library code in your own application.   
