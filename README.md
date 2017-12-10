@@ -32,27 +32,22 @@ The demo saves the use salt and verifier in an [SQLite](http://php.net/manual/en
 
 * `require.php` a fragment to pull in the SRP constants, Thinbus library, RedBean library. It also initialises the SQLite database. 
 * `rb.php` [RedBeanPHP](http://redbeanphp.com) "an easy-to-use, on-the-fly ORM for PHP" used to abstract the database solely for the convenience of this demo. You are not expected to use this library code in your own application.   
-* `register.php` accepts a POST with the user email, salt and verifier and saves them into the SQLite database. It is expected you have your own logic for registering users and you are going to modify that to save a salt and verifier for each user rather than use this code.
-* `challenge.php` accepts a POST with the user email, looks up the salt and verifier in the SQLite database, and uses Thinbus core library code to generate a one-time server challenge. It saves the Thinbus object in the SQLite database in an 'authentication' table so that it can look up everything needed to verify the client password proof based on the one-time challenge. It is expected that you don't use my SQLLite demo code but supply your own code to save things in your main database using your own code. 
-* `login.php` verifies the user password proof. Note that the server needs to remember the one-time challenge that it gave the client to check the one-time password proof. It therefore looks up the object that created the one-time challenge in the SQLite database. It is expected that you don't use my SQLLite demo code but supply your own code to save things in your main database using your own code. This logic uses the core Thinbus library code to check the password proof which will throw a PHP exception if authentication fails. 
+* `register.php` accepts a POST with the user email, salt and verifier and saves them into the SQLite database. It is expected you have your own logic for saving to an industrial database rather than use this code.
+* `challenge.php` accepts a POST with the user email, looks up the salt and verifier in the SQLite database, and uses Thinbus core library code to generate a one-time server challenge. It saves the Thinbus object in the SQLite database in an 'authentication' table so that it can look up everything needed to verify the client password proof made by the browser using the one-time challenge. It is expected that you don't use my SQLLite demo code but supply your own code to save things in your main database. 
+* `login.php` verifies the user password proof. Note that the server needs to remember the one-time challenge that it gave the client to check the one-time password proof. It therefore looks up the object that created the one-time challenge in the SQLite database. It is expected that you don't use my SQLLite demo code but supply your own code to load things in your main database. The logic then uses the core Thinbus library code to check the password proof and will throw a PHP exception if authentication fails. 
 
-It is expected that you create your own code for loading and saving data to a real database. Do not use my SQLLite or RedBean code. Only use the PHP files at `thinbus\*.php` folder of this repo.It is expected that you use your own code for handling authorisation of which pages users can or cannot access. Trying to modifying the demo files to support your application may be harder than just modifying your current application to simply use the core Thinbus library at `thinbus\*.php`. 
+It is expected that you create your own code for loading and saving data to a real database. Do not use my SQLLite or RedBean code. Only use the PHP files installed under the `vendor` folder when you run `composer update`. It is expected that you use your own code for handling authorisation of which pages users can or cannot access. Trying to modifying the demo files to support your application may be far harder than just modifying your current application to simply use the core Thinbus library at `thinbus\*.php`. 
 
 Please read the recommendations in the [main thinbus documentation](https://bitbucket.org/simon_massey/thinbus-srp-js) and take additional steps such as using HTTPS and encrypting the password verifier in the database which are not shown in this demo. 
-
-**Note:** It is *strongly* *recommended* that you install the PHP [Open SSL extention](http://php.net/manual/en/book.openssl.php) which the random number generator in `srand.php` will try to use. If it cannot find that extension then it's second choice is the PHP [Mcrypt Extension](http://php.net/manual/en/book.mcrypt.php). If it cannot find that or if it is running on Windows it uses it's own random number generating approach by [George Argyros](https://github.com/GeorgeArgyros/Secure-random-bytes-in-PHP). 
 
 ## Troubleshooting
 
 If you are having problems first check that the PHP unit code runs locally on your worksation using the exact same version of PHP as you run on your server: 
 
 ```sh
-# download the php phar if you don't have it installed globally and check it can print out its version
-wget https://phar.phpunit.de/phpunit.phar
-# the following should be 6.4.4 or higher
-php phpunit.phar --version
+composer update
 # run the Thinbus unit tests which tests the cryptography
-php phpunit.phar ThibusTest.php
+./vendor/phpunit/phpunit/phpunit --verbose ./vendor/simon_massey/thinbus-php-srp/ThinbusTest.php
 ```
 
 If all test pass should output a final line such as `OK (xx tests, yyy assertions)`. If not raise an issue with the exact PHP version and the output of `phpinfo();`
