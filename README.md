@@ -40,6 +40,28 @@ It is expected that you create your own code for loading and saving data to a re
 
 Please read the recommendations in the [main thinbus documentation](https://bitbucket.org/simon_massey/thinbus-srp-js) and take additional steps such as using HTTPS and encrypting the password verifier in the database which are not shown in this demo. 
 
+### Big Thanks
+
+Cross-browser Testing Platform and Open Source <3 Provided by [Sauce Labs][homepage]
+
+Using Sauce Labs the demo app code [thinbus-php-srp-demo](https://packagist.org/packages/simon_massey/thinbus-php-srp-demo) has been tested to work on:
+
+ * Android 6.0 
+ * Android 5.1
+ * Android 5.0
+ * Android 4.4
+ * iOS 11.0
+ * iOS 8.1
+ * Microsoft Edge 15
+ * Microsoft Edge 13
+ * Microsoft Explorer 11 (note all previous versions were end of life Jan 2016)
+ * Chrome 63
+ * Chrome 26
+ * Firefox 57
+ * Firefox 4 (released March 22, 2011!)
+ * Safari 11 
+ * Safari 7 
+
 ## Troubleshooting
 
 If you are having problems first check that the PHP unit code runs locally on your worksation using the exact same version of PHP as you run on your server: 
