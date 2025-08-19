@@ -11,3 +11,4 @@ phpinfo.php
 .vscode/
 issue8.txt
 vendor/
+verify_security_fix.php
