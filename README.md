@@ -15,7 +15,7 @@ This demo lets you test the library with your PHP version and use browser develo
 # see https://getcomposer.org/doc/01-basic-usage.md
 composer update
 # run all the unit tests to be sure that you have installed a version of the library that works with your PHP intall
-./vendor/phpunit/phpunit/phpunit ./vendor/simon_massey/thinbus-php-srp/ThinbusTest.php
+./vendor/phpunit/phpunit/phpunit ./vendor/simon_massey/thinbus-php-srp/test/ThinbusTest.php
 # Run this in the same folder as the top level demo files
 php -S localhost:8000
 # now open the demo in your browser which is running at http://localhost:8000
@@ -69,7 +69,7 @@ If you are having problems first check that the PHP unit code runs locally on yo
 ```sh
 composer update
 # run the Thinbus unit tests which tests the cryptography
-./vendor/phpunit/phpunit/phpunit --verbose ./vendor/simon_massey/thinbus-php-srp/ThinbusTest.php
+./vendor/phpunit/phpunit/phpunit --verbose ./vendor/simon_massey/thinbus-php-srp/test/ThinbusTest.php
 ```
 
 If all test pass should output a final line such as `OK (xx tests, yyy assertions)`. If not raise an issue with the exact PHP version and the output of `phpinfo();`
