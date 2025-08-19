@@ -42,18 +42,33 @@ if (! empty($_POST['password'])) {
          * could store in the $_SESSION.
          */
         
-        $authentication = R::findOne('authentication', 'email = :email', array(
-            ':email' => $email
-        ));
+        /**
+         * The following code uses session storage instead of database unserialize
+         * to avoid security vulnerabilities with unserialize().
+         */
         
-        if (! empty($authentication)) {
+        session_start();
+        
+        // Check if we have a valid SRP session for this email
+        if (isset($_SESSION['srp_auth']) && 
+            $_SESSION['srp_auth']['email'] === $email) {
             
-            $srp = unserialize($authentication->srp);
+            $srp = $_SESSION['srp_auth']['srp_object'];
+            
+            // Optional: Check session timeout (5 minutes)
+            $session_age = time() - $_SESSION['srp_auth']['timestamp'];
+            if ($session_age > 300) { // 5 minutes
+                unset($_SESSION['srp_auth']);
+                throw new Exception('Authentication session expired');
+            }
             
             /**
              * This is the actual SRP authorisation logic which throws an exception if the password proof is bad.
              */
             $srp->step2($A, $M1);
+            
+            // Clear the session data after successful authentication
+            unset($_SESSION['srp_auth']);
             
             /**
             This result is actually an optional proof of a shared session key that
@@ -65,7 +80,7 @@ if (! empty($_POST['password'])) {
             
         } else {
             $result = array(
-                'error' => 'No prior challenge.'
+                'error' => 'No prior challenge or session expired.'
             );
         }
         

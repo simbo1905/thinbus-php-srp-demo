@@ -44,15 +44,26 @@ if (! empty($_POST['email'])) {
         $B = $srp->step1($_POST['email'], $user->password_salt, $user->password_verifier);
         
         /**
-        Serialize the server SRP object so that we can store it until the browser responds to our challange
+        Store the SRP object safely in the user session instead of using serialize/unserialize
+        in the database, which has security implications.
          */
-        $serial = serialize($srp);
         
         /**
-         The following code is disposable demo code. It is entirly up to you how you store the object between
-         browser requiests you could use your own database access code or you could store in the $_SESSION.
+         The following code is improved demo code that uses $_SESSION storage instead of 
+         database storage with serialize/unserialize to avoid security vulnerabilities.
+         Session storage is more appropriate for temporary authentication state.
          */
         
+        session_start();
+        
+        // Store the SRP object in the session instead of serializing to database
+        $_SESSION['srp_auth'] = array(
+            'email' => $user->email,
+            'srp_object' => $srp,
+            'timestamp' => time()
+        );
+        
+        // Still store basic authentication record for cleanup purposes
         $authentication = R::findOne('authentication', 'email = :email', array(
             ':email' => $user->email
         ));
@@ -61,7 +72,7 @@ if (! empty($_POST['email'])) {
             $authentication = R::dispense('authentication');
         
         $authentication->email = $user->email;
-        $authentication->srp = serialize($srp);
+        $authentication->challenge_time = date('Y-m-d H:i:s');
         $dbid = R::store($authentication);
         
         $result = array(
