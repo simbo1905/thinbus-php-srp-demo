@@ -1,0 +1,45 @@
+name: PHP 7.4 Vendor Tests
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 7.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: bcmath, gmp, sqlite3, mbstring, curl, dom, xml
+          coverage: none
+
+      - name: Show versions
+        run: |
+          php -v
+          php -m
+          composer -V || true
+
+      - name: Install dependencies (composer install)
+        run: |
+          composer --version || curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+          composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run tests
+        run: |
+          mkdir -p build/test-results
+          ./vendor/phpunit/phpunit/phpunit --verbose \
+            --log-junit build/test-results/junit.xml \
+            ./vendor/simon_massey/thinbus-php-srp/test/ThinbusTest.php
+
+      - name: Upload test results artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpunit-junit
+          path: build/test-results/junit.xml
