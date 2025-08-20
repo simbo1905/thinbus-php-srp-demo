@@ -1,0 +1,83 @@
+name: PHP Matrix Tests
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.4', '8.1', '8.2', '8.3', '8.4']
+        include:
+          - php-version: '7.4'
+            phpunit-version: '9.6'
+          - php-version: '8.1'
+            phpunit-version: '10'
+          - php-version: '8.2'
+            phpunit-version: '11'
+          - php-version: '8.3'
+            phpunit-version: '11'
+          - php-version: '8.4'
+            phpunit-version: '11'
+
+    name: PHP ${{ matrix.php-version }} Tests
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: bcmath, gmp, sqlite3, mbstring, curl, dom, xml
+          tools: phpunit:${{ matrix.phpunit-version }}, composer
+          coverage: none
+
+      - name: Show versions
+        run: |
+          php -v
+          php -m
+          composer -V
+          phpunit --version
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Install dependencies (composer install)
+        run: |
+          composer --version || curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+          # Use --ignore-platform-reqs due to legacy dependency constraints
+          # Use --ignore-platform-reqs due to legacy dependency constraints
+          if [ "${{ matrix.php-version }}" = "7.4" ]; then
+            composer install --no-interaction --prefer-dist --no-progress --ignore-platform-reqs --no-dev
+          else
+            composer install --no-interaction --prefer-dist --no-progress --ignore-platform-reqs
+          fi
+
+      - name: Run tests
+        run: |
+          mkdir -p build/test-results
+          if [ "${{ matrix.php-version }}" = "7.4" ]; then
+            phpunit --bootstrap vendor/autoload.php \
+              --log-junit build/test-results/junit-php${{ matrix.php-version }}.xml \
+              tests
+          else
+            phpunit --configuration phpunit.xml
+            # PHPUnit 10/11 read logging path from phpunit.xml; copy to matrix-specific filename
+            if [ -f build/test-results/junit.xml ]; then
+              cp build/test-results/junit.xml build/test-results/junit-php${{ matrix.php-version }}.xml
+            fi
+          fi
+          echo "✅ Tests completed successfully on PHP ${{ matrix.php-version }}"
+
+      - name: Upload test results artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpunit-junit-php${{ matrix.php-version }}
+          path: build/test-results/junit-php${{ matrix.php-version }}.xml
