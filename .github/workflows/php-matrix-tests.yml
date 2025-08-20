@@ -62,8 +62,11 @@ jobs:
               --log-junit build/test-results/junit-php${{ matrix.php-version }}.xml \
               tests
           else
-            phpunit --configuration phpunit.xml \
-              --log-junit build/test-results/junit-php${{ matrix.php-version }}.xml
+            phpunit --configuration phpunit.xml
+            # PHPUnit 10/11 read logging path from phpunit.xml; copy to matrix-specific filename
+            if [ -f build/test-results/junit.xml ]; then
+              cp build/test-results/junit.xml build/test-results/junit-php${{ matrix.php-version }}.xml
+            fi
           fi
           echo "✅ Tests completed successfully on PHP ${{ matrix.php-version }}"
 
