@@ -11,18 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['7.4', '8.1', '8.2', '8.3', '8.4']
-        include:
-          - php-version: '7.4'
-            phpunit-version: '9.6'
-          - php-version: '8.1'
-            phpunit-version: '10'
-          - php-version: '8.2'
-            phpunit-version: '11'
-          - php-version: '8.3'
-            phpunit-version: '11'
-          - php-version: '8.4'
-            phpunit-version: '11'
+        php-version: ['8.1', '8.2', '8.3', '8.4']
         
     name: PHP ${{ matrix.php-version }} Tests
     
@@ -35,7 +24,6 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           extensions: bcmath, gmp, sqlite3, mbstring, curl, dom, xml
-          tools: phpunit:${{ matrix.phpunit-version }}, composer
           coverage: none
 
       - name: Show versions
@@ -43,7 +31,6 @@ jobs:
           php -v
           php -m
           composer -V
-          phpunit --version
 
       - name: Validate composer.json
         run: composer validate --strict

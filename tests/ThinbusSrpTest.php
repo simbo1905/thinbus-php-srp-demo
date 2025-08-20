@@ -104,6 +104,22 @@ class ThinbusSrpTest extends TestCase
 
     public function testPHPVersionCompatibility(): void
     {
+        // Allow PHP 7.4 (for legacy library deps) and PHP 8.1–8.4
+        $this->assertTrue(
+            (PHP_VERSION_ID >= 70400 && PHP_VERSION_ID < 70500) || PHP_VERSION_ID >= 80100,
+            'Supported PHP versions are 7.4 and 8.1–8.4'
+        );
+
+        // Feature checks vary by version
+        if (PHP_VERSION_ID >= 80000) {
+            $this->assertTrue(function_exists('str_contains'));
+        } else {
+            // PHP 7.4: str_contains is not available
+            $this->assertFalse(function_exists('str_contains'));
+        }
+        $this->assertTrue(class_exists('Math_BigInteger'));
+        $this->assertTrue(class_exists('Thinbus\\ThinbusSrp'));
+
         // Test that we're running on PHP 8.0+
         $this->assertGreaterThanOrEqual(80000, PHP_VERSION_ID, 'This test suite requires PHP 8.0+');
         
