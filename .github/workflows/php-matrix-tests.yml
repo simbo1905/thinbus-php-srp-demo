@@ -11,10 +11,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['8.1', '8.2', '8.3', '8.4']
-        
+        php-version: ['7.4', '8.1', '8.2', '8.3', '8.4']
+        include:
+          - php-version: '7.4'
+            phpunit-version: '9.6'
+          - php-version: '8.1'
+            phpunit-version: '10'
+          - php-version: '8.2'
+            phpunit-version: '11'
+          - php-version: '8.3'
+            phpunit-version: '11'
+          - php-version: '8.4'
+            phpunit-version: '11'
+
     name: PHP ${{ matrix.php-version }} Tests
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,12 +57,14 @@ jobs:
       - name: Run tests
         run: |
           mkdir -p build/test-results
-          echo "Running modern PHPUnit 10 test suite on PHP ${{ matrix.php-version }}"
-          
-          # Run our modern test suite with PHPUnit 10
-          ./vendor/bin/phpunit --configuration phpunit.xml \
-            --log-junit build/test-results/junit-php${{ matrix.php-version }}.xml
-          
+          if [ "${{ matrix.php-version }}" = "7.4" ]; then
+            phpunit --bootstrap vendor/autoload.php \
+              --log-junit build/test-results/junit-php${{ matrix.php-version }}.xml \
+              tests
+          else
+            phpunit --configuration phpunit.xml \
+              --log-junit build/test-results/junit-php${{ matrix.php-version }}.xml
+          fi
           echo "✅ Tests completed successfully on PHP ${{ matrix.php-version }}"
 
       - name: Upload test results artifact
