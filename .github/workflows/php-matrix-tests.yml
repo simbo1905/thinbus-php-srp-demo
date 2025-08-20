@@ -52,7 +52,11 @@ jobs:
         run: |
           composer --version || curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
           # Use --ignore-platform-reqs due to legacy dependency constraints
-          composer install --no-interaction --prefer-dist --no-progress --ignore-platform-reqs
+          if [ "${{ matrix.php-version }}" = "7.4" ]; then
+            composer install --no-interaction --prefer-dist --no-progress --ignore-platform-reqs --no-dev
+          else
+            composer install --no-interaction --prefer-dist --no-progress --ignore-platform-reqs
+          fi
 
       - name: Run tests
         run: |
