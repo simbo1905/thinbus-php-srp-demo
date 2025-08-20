@@ -118,14 +118,6 @@ class ThinbusSrpTest extends TestCase
             $this->assertFalse(function_exists('str_contains'));
         }
         $this->assertTrue(class_exists('Math_BigInteger'));
-        $this->assertTrue(class_exists('Thinbus\\ThinbusSrp'));
-
-        // Test that we're running on PHP 8.0+
-        $this->assertGreaterThanOrEqual(80000, PHP_VERSION_ID, 'This test suite requires PHP 8.0+');
-        
-        // Test that basic PHP 8 features work
-        $this->assertTrue(function_exists('str_contains'));
-        $this->assertTrue(class_exists('Math_BigInteger'));
         $this->assertTrue(class_exists('Thinbus\ThinbusSrp'));
     }
 
@@ -150,7 +142,7 @@ class ThinbusSrpTest extends TestCase
         $majorVersion = PHP_MAJOR_VERSION;
         $minorVersion = PHP_MINOR_VERSION;
         
-        $this->assertGreaterThanOrEqual(8, $majorVersion, "Should be running on PHP 8.x");
+        $this->assertTrue((PHP_VERSION_ID >= 70400 && PHP_VERSION_ID < 70500) || PHP_VERSION_ID >= 80100, 'Supported PHP versions are 7.4 and 8.1–8.4');
         
         // Test that the library can handle basic operations on all supported versions
         $salt = bin2hex(random_bytes(32));
