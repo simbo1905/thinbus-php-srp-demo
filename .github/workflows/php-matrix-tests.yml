@@ -11,10 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['7.4', '8.1', '8.2', '8.3', '8.4']
+        php-version: ['8.1', '8.2', '8.3', '8.4']
         include:
-          - php-version: '7.4'
-            phpunit-version: '9.6'
           - php-version: '8.1'
             phpunit-version: '10'
           - php-version: '8.2'
@@ -52,25 +50,15 @@ jobs:
         run: |
           composer --version || curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
           # Use --ignore-platform-reqs due to legacy dependency constraints
-          if [ "${{ matrix.php-version }}" = "7.4" ]; then
-            composer install --no-interaction --prefer-dist --no-progress --ignore-platform-reqs --no-dev
-          else
-            composer install --no-interaction --prefer-dist --no-progress --ignore-platform-reqs
-          fi
+          composer install --no-interaction --prefer-dist --no-progress --ignore-platform-reqs
 
       - name: Run tests
         run: |
           mkdir -p build/test-results
-          if [ "${{ matrix.php-version }}" = "7.4" ]; then
-            phpunit --bootstrap vendor/autoload.php \
-              --log-junit build/test-results/junit-php${{ matrix.php-version }}.xml \
-              tests
-          else
-            phpunit --configuration phpunit.xml
-            # PHPUnit 10/11 read logging path from phpunit.xml; copy to matrix-specific filename
-            if [ -f build/test-results/junit.xml ]; then
-              cp build/test-results/junit.xml build/test-results/junit-php${{ matrix.php-version }}.xml
-            fi
+          phpunit --configuration phpunit.xml
+          # PHPUnit 10/11 read logging path from phpunit.xml; copy to matrix-specific filename
+          if [ -f build/test-results/junit.xml ]; then
+            cp build/test-results/junit.xml build/test-results/junit-php${{ matrix.php-version }}.xml
           fi
           echo "✅ Tests completed successfully on PHP ${{ matrix.php-version }}"
 
