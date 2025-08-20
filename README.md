@@ -6,18 +6,6 @@ This is a demo of the [Thinbus SRP PHP](https://packagist.org/packages/simon_mas
 
 **Note** Please read the [Thinbus documentation page](https://bitbucket.org/simon_massey/thinbus-srp-js) before attempting to use this demo code which is the project where the JavaScript came from which outlines some best practices. 
 
-## Security Improvement
-
-**Important Security Fix**: This demo has been updated to address a security vulnerability (Issue #1) where `serialize()` and `unserialize()` functions were used to store SRP authentication state. These functions can lead to code execution vulnerabilities when used with potentially untrusted data.
-
-**Changes Made**:
-- Replaced database storage with `serialize()/unserialize()` with secure session-based storage
-- SRP objects are now stored in `$_SESSION` instead of being serialized to the database
-- Added session timeout protection (5 minutes)
-- Automatic session cleanup after successful authentication
-
-This approach eliminates the security risk while maintaining the same functionality. Session storage is more appropriate for temporary authentication state and follows security best practices. 
-
 ## Trying The Demo
 
 This demo lets you test the library with your PHP version and use browser developer tools to inspect the AJAX traffic. Be sure to test locally on your workstation with the exact same version of php on your server before trying to deploy on your server!
