@@ -1,4 +1,4 @@
-name: PHP 7.4 Vendor Tests
+name: PHP Matrix Tests
 
 on:
   pull_request:
@@ -8,14 +8,21 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+        
+    name: PHP ${{ matrix.php-version }} Tests
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PHP 7.4
+      - name: Setup PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: ${{ matrix.php-version }}
           extensions: bcmath, gmp, sqlite3, mbstring, curl, dom, xml
           coverage: none
 
@@ -24,6 +31,9 @@ jobs:
           php -v
           php -m
           composer -V || true
+
+      - name: Validate composer.json
+        run: composer validate --strict
 
       - name: Install dependencies (composer install)
         run: |
@@ -34,12 +44,12 @@ jobs:
         run: |
           mkdir -p build/test-results
           ./vendor/phpunit/phpunit/phpunit --verbose \
-            --log-junit build/test-results/junit.xml \
+            --log-junit build/test-results/junit-php${{ matrix.php-version }}.xml \
             ./vendor/simon_massey/thinbus-php-srp/test/ThinbusTest.php
 
       - name: Upload test results artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: phpunit-junit
-          path: build/test-results/junit.xml
+          name: phpunit-junit-php${{ matrix.php-version }}
+          path: build/test-results/junit-php${{ matrix.php-version }}.xml
